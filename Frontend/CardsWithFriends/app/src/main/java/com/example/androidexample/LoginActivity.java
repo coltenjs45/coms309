@@ -36,7 +36,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private Button backButton;
 
-    private TextView msgResponse;
+
 
     String url = "https://c5c54892-829a-4d77-bdcc-1d887f3cc81c.mock.pstmn.io/users";
 
@@ -133,7 +133,7 @@ public class LoginActivity extends AppCompatActivity {
                             }
                         } catch (Exception e) {
                             Log.e("Volley Parse Error", e.toString());
-                            msgResponse.setText("Parse error!");
+
                         }
                     }
                 },
@@ -141,7 +141,7 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Log.e("Volley Error", error.toString());
-                        msgResponse.setText("Failed to load data. Please try again.");
+
                     }
                 }
         );
