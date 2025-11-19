@@ -6,12 +6,12 @@ android-build:
   image: afirefly/android-ci:java17
   stage: androidbuild
   tags:
-    - elijahh_tag                   # <-- change to your runner's tag
-  before_script:                    # change 'Frontend' to where you have 'gradlew'
+    - elijahh_tag
+  before_script:
     - export GRADLE_USER_HOME=`pwd`/.gradle
     - chmod +x ./Frontend/CardsWithFriends/gradlew
   script:
-    - cd Frontend/CardsWithFriends      # change 'Frontend' to where you have 'gradlew' (do not add / in the beginning)
+    - cd Frontend/CardsWithFriends
     - ./gradlew build
   only:
     refs:
@@ -23,12 +23,12 @@ android-test:
   image: afirefly/android-ci:java17
   stage: androidtest
   tags:
-    - elijahh_tag                  # <-- change to your runner's tag
-  before_script:                   # change 'Frontend' to where you have 'gradlew'
+    - elijahh_tag
+  before_script:
     - export GRADLE_USER_HOME=`pwd`/.gradle
     - chmod +x ./Frontend/CardsWithFriends/gradlew
   script:
-    - cd Frontend                  # change 'Frontend' to where you have 'gradlew' (do not add / in the beginning)
+    - cd Frontend/CardsWithFriends
     - ./gradlew test
   only:
     refs:
