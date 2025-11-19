@@ -5,26 +5,26 @@ stages:
 maven-build:
   stage: mavenbuild
   tags:
-    - jakeb_tag      # <-- change to your runner's tag
+    - jakeb_tag
   script:
-    - cd Backend/project/project2        # change 'Backend' to to where you have the pom.xml (do not add / in the beginning)
+    - cd Backend/project/project2
     - mvn package
   only:
     refs:
-      - JAKEB_CICD
+      - 90-JAKEB_CICD
     changes:
       - Backend/**/*
-
 
 maven-test:
   stage: maventest
   tags:
-    - jakeb_tag     # <-- change to your runner's tag
+    - jakeb_tag
   script:
-    - cd Backend/project/project2      # change 'Backend' to to where you have the pom.xml (do not add / in the beginning)
+    - cd Backend/project/project2
     - mvn test
   only:
     refs:
-      - JAKEB_CICD
+      - 90-JAKEB_CICD
     changes:
       - Backend/**/*
+
