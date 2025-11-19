@@ -15,7 +15,7 @@ android-build:
     - ./gradlew build
   only:
     refs:
-      - 91-elijahh_cicd
+      - 91-elijahh-cicd
     changes:
       - Frontend/**/*
 
