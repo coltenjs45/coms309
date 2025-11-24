@@ -19,7 +19,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b8f83e91-f191-4050-916d-4fdf9b0007bf" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/build/reports/problems/problems-report.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/reports/problems/problems-report.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/androidexample/GofishActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/androidexample/GofishActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/androidexample/services/CardView.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/androidexample/services/CardView.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/local.properties" beforeDir="false" afterPath="$PROJECT_DIR$/local.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -29,7 +34,7 @@
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=LocalEmulator, isTemplate=false, identifier=path=C:\Users\alexb\.android\avd\Medium_Phone.avd)]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=LocalEmulator, isTemplate=false, identifier=path=C:\Users\elihe\.android\avd\Pixel_4a.avd)]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -38,8 +43,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="layoutResourceFile" />
         <option value="resourceFile" />
+        <option value="layoutResourceFile" />
       </list>
     </option>
   </component>
@@ -65,7 +70,9 @@
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
     "com.google.services.firebase.aqiPopupShown": "true",
-    "git-widget-placeholder": "92-alex-cicd"
+    "git-widget-placeholder": "96-gofish-ui-revamp",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/CS_3090/Project/1_srijita_5/Frontend/CardsWithFriends"
   }
 }]]></component>
   <component name="RecentsManager">
@@ -163,12 +170,12 @@
       <map>
         <entry key="com.example.androidexample">
           <value>
-            <CheckInfo lastCheckTimestamp="1763755830761" />
+            <CheckInfo lastCheckTimestamp="1763958868289" />
           </value>
         </entry>
         <entry key="com.example.androidexample.test">
           <value>
-            <CheckInfo lastCheckTimestamp="1763755830762" />
+            <CheckInfo lastCheckTimestamp="1763958868289" />
           </value>
         </entry>
       </map>

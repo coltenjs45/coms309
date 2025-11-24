@@ -20,6 +20,7 @@ public class CardView extends View {
     private String rank = "7";
     private String suit = "s";
     private boolean faceUp = true;
+    private boolean interactable = true; // NEW: Controls whether card handles touch events
 
     private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final RectF rect = new RectF();
@@ -51,6 +52,11 @@ public class CardView extends View {
         invalidate();
     }
 
+    // NEW: Method to disable touch interaction (for dialogs)
+    public void setInteractable(boolean interactable) {
+        this.interactable = interactable;
+    }
+
     public String getCardValue() {
         return rank;
     }
@@ -69,6 +75,11 @@ public class CardView extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        // NEW: If not interactable, don't handle touch events
+        if (!interactable) {
+            return false; // Let the parent handle the touch
+        }
+
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 // Remember original position and rotation

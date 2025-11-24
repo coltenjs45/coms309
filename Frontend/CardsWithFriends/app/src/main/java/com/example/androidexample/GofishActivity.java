@@ -1,10 +1,17 @@
 package com.example.androidexample;
 
-import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.animation.AnimationUtils;
+import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -12,6 +19,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
+import androidx.cardview.widget.CardView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -20,7 +28,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.example.androidexample.services.CardView;
 import com.example.androidexample.services.WebSocketListener;
 import com.example.androidexample.services.WebSocketManager;
 
@@ -44,9 +51,9 @@ public class GofishActivity extends AppCompatActivity implements WebSocketListen
     private String gameType;
     private ArrayList<String> playerList;
 
-    private CardView selectedCard = null;
+    private com.example.androidexample.services.CardView selectedCard = null;
     private ConstraintLayout rootLayout;
-    private List<CardView> cards;
+    private List<com.example.androidexample.services.CardView> cards;
     private GameState gameState = new GameState();
     private boolean gameStarted = false;
 
@@ -284,10 +291,10 @@ public class GofishActivity extends AppCompatActivity implements WebSocketListen
 
     private void handleAskButtonClick() {
         // First, show player selection dialog
-        showPlayerSelectionDialog();
+        showModernPlayerSelectionDialog();
     }
 
-    private void showPlayerSelectionDialog() {
+    private void showModernPlayerSelectionDialog() {
         // Get list of other players (not current user)
         List<String> otherPlayers = new ArrayList<>();
         for (PlayerState p : gameState.players) {
@@ -301,20 +308,72 @@ public class GofishActivity extends AppCompatActivity implements WebSocketListen
             return;
         }
 
-        String[] playerArray = otherPlayers.toArray(new String[0]);
+        // Create modern dialog
+        final Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.dialog_player_selection);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Ask which player?");
-        builder.setItems(playerArray, (dialog, which) -> {
-            String targetPlayer = playerArray[which];
-            // After selecting player, show rank selection
-            showRankSelectionDialog(targetPlayer);
-        });
-        builder.setNegativeButton("Cancel", null);
-        builder.show();
+        TextView titleText = dialog.findViewById(R.id.dialog_title);
+        LinearLayout playerContainer = dialog.findViewById(R.id.player_container);
+        Button cancelButton = dialog.findViewById(R.id.cancel_button);
+
+        titleText.setText("Select a Player");
+
+        // Add player buttons with animation
+        for (int i = 0; i < otherPlayers.size(); i++) {
+            final String playerName = otherPlayers.get(i);
+
+            CardView playerCard = new CardView(this);
+            LinearLayout.LayoutParams cardParams = new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+            );
+            cardParams.setMargins(0, 0, 0, 24);
+            playerCard.setLayoutParams(cardParams);
+            playerCard.setCardElevation(8f);
+            playerCard.setRadius(16f);
+            playerCard.setCardBackgroundColor(Color.parseColor("#2196F3"));
+            playerCard.setClickable(true);
+            playerCard.setFocusable(true);
+
+            TextView playerText = new TextView(this);
+            playerText.setText(playerName);
+            playerText.setTextSize(18);
+            playerText.setTextColor(Color.WHITE);
+            playerText.setPadding(48, 40, 48, 40);
+            playerText.setGravity(Gravity.CENTER);
+
+            playerCard.addView(playerText);
+
+            // Add click listener
+            playerCard.setOnClickListener(v -> {
+                dialog.dismiss();
+                showModernRankSelectionDialog(playerName);
+            });
+
+            playerContainer.addView(playerCard);
+
+            // Animate entry
+            final int delay = i * 80;
+            playerCard.setAlpha(0f);
+            playerCard.setTranslationY(30f);
+            playerCard.postDelayed(() -> {
+                playerCard.animate()
+                        .alpha(1f)
+                        .translationY(0f)
+                        .setDuration(300)
+                        .start();
+            }, delay);
+        }
+
+        cancelButton.setOnClickListener(v -> dialog.dismiss());
+
+        dialog.show();
     }
 
-    private void showRankSelectionDialog(String targetPlayer) {
+    private void showModernRankSelectionDialog(String targetPlayer) {
         // Get unique card values from current player's hand
         PlayerState currentPlayer = null;
         for (PlayerState p : gameState.players) {
@@ -332,12 +391,14 @@ public class GofishActivity extends AppCompatActivity implements WebSocketListen
         // Get unique values from hand
         List<Integer> uniqueValues = new ArrayList<>();
         List<String> displayNames = new ArrayList<>();
+        List<String> suits = new ArrayList<>();
 
         for (CardState card : currentPlayer.hand) {
             int value = convertStringToValue(card.value);
             if (!uniqueValues.contains(value)) {
                 uniqueValues.add(value);
-                displayNames.add(card.value); // Use the display string (A, K, Q, J, or number)
+                displayNames.add(card.value);
+                suits.add(card.suit); // Store one suit for display
             }
         }
 
@@ -353,21 +414,153 @@ public class GofishActivity extends AppCompatActivity implements WebSocketListen
                     String tempStr = displayNames.get(i);
                     displayNames.set(i, displayNames.get(j));
                     displayNames.set(j, tempStr);
+                    // Swap suits
+                    String tempSuit = suits.get(i);
+                    suits.set(i, suits.get(j));
+                    suits.set(j, tempSuit);
                 }
             }
         }
 
-        String[] ranks = displayNames.toArray(new String[0]);
-        Integer[] values = uniqueValues.toArray(new Integer[0]);
+        // Create modern dialog
+        final Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.dialog_card_selection);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Ask " + targetPlayer + " for which rank?");
-        builder.setItems(ranks, (dialog, which) -> {
-            int value = values[which];
-            sendTurn(username, targetPlayer, value);
+        TextView titleText = dialog.findViewById(R.id.dialog_title);
+        TextView subtitleText = dialog.findViewById(R.id.dialog_subtitle);
+        LinearLayout cardContainer = dialog.findViewById(R.id.card_container);
+        Button confirmButton = dialog.findViewById(R.id.confirm_button);
+        Button cancelButton = dialog.findViewById(R.id.cancel_button);
+
+        titleText.setText("Select a Card Rank");
+        subtitleText.setText("Ask " + targetPlayer + " for:");
+
+        // Track selected card
+        final int[] selectedValue = {-1};
+        final View[] selectedCardWrapper = {null};
+
+        // Calculate grid layout
+        int totalCards = displayNames.size();
+        int cardsPerRow = Math.min(5, totalCards);
+        int numRows = (int) Math.ceil((double) totalCards / cardsPerRow);
+
+        // Clear container and set it to vertical orientation for rows
+        cardContainer.removeAllViews();
+        cardContainer.setOrientation(LinearLayout.VERTICAL);
+
+        // Disable confirm button initially
+        confirmButton.setEnabled(false);
+        confirmButton.setAlpha(0.5f);
+
+        // Add cards in grid layout
+        int cardIndex = 0;
+        for (int row = 0; row < numRows; row++) {
+            LinearLayout rowLayout = new LinearLayout(this);
+            rowLayout.setOrientation(LinearLayout.HORIZONTAL);
+            rowLayout.setGravity(Gravity.CENTER);
+            LinearLayout.LayoutParams rowParams = new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+            );
+            rowLayout.setLayoutParams(rowParams);
+
+            // Add cards to this row
+            int cardsInThisRow = Math.min(cardsPerRow, totalCards - cardIndex);
+            for (int col = 0; col < cardsInThisRow; col++) {
+                final String rank = displayNames.get(cardIndex);
+                final String suit = suits.get(cardIndex);
+                final int value = uniqueValues.get(cardIndex);
+
+                // Create clickable wrapper for the card
+                LinearLayout cardWrapper = new LinearLayout(this);
+                cardWrapper.setOrientation(LinearLayout.VERTICAL);
+                LinearLayout.LayoutParams wrapperParams = new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT
+                );
+                wrapperParams.setMargins(12, 12, 12, 12);
+                cardWrapper.setLayoutParams(wrapperParams);
+                cardWrapper.setClickable(true);
+                cardWrapper.setFocusable(true);
+                cardWrapper.setTag(value); // Store value in tag
+
+                // Create mini card view
+                com.example.androidexample.services.CardView miniCard =
+                        new com.example.androidexample.services.CardView(this);
+                LinearLayout.LayoutParams cardParams = new LinearLayout.LayoutParams(120, 160);
+                miniCard.setLayoutParams(cardParams);
+                miniCard.setCard(rank, suit, true);
+                miniCard.setInteractable(false); // Disable card's touch handling for dialogs
+                miniCard.setElevation(8f);
+
+                cardWrapper.addView(miniCard);
+
+                // Add click listener to wrapper for selection
+                cardWrapper.setOnClickListener(v -> {
+                    // Deselect previous card
+                    if (selectedCardWrapper[0] != null) {
+                        selectedCardWrapper[0].setScaleX(1f);
+                        selectedCardWrapper[0].setScaleY(1f);
+                        selectedCardWrapper[0].setAlpha(1f);
+                    }
+
+                    // Select this card
+                    selectedValue[0] = value;
+                    selectedCardWrapper[0] = v;
+
+                    // Highlight selected card
+                    v.setScaleX(1.15f);
+                    v.setScaleY(1.15f);
+                    v.setAlpha(1f);
+
+                    // Enable confirm button
+                    confirmButton.setEnabled(true);
+                    confirmButton.setAlpha(1f);
+
+                    // Add bounce animation
+                    v.animate()
+                            .scaleX(1.15f)
+                            .scaleY(1.15f)
+                            .setDuration(200)
+                            .start();
+                });
+
+                rowLayout.addView(cardWrapper);
+
+                // Animate entry
+                final int delay = cardIndex * 80;
+                cardWrapper.setAlpha(0f);
+                cardWrapper.setScaleX(0.7f);
+                cardWrapper.setScaleY(0.7f);
+                cardWrapper.postDelayed(() -> {
+                    cardWrapper.animate()
+                            .alpha(1f)
+                            .scaleX(1f)
+                            .scaleY(1f)
+                            .setDuration(300)
+                            .start();
+                }, delay);
+
+                cardIndex++;
+            }
+
+            cardContainer.addView(rowLayout);
+        }
+
+        // Confirm button action
+        confirmButton.setOnClickListener(v -> {
+            if (selectedValue[0] != -1) {
+                dialog.dismiss();
+                sendTurn(username, targetPlayer, selectedValue[0]);
+            }
         });
-        builder.setNegativeButton("Cancel", null);
-        builder.show();
+
+        cancelButton.setOnClickListener(v -> dialog.dismiss());
+
+        dialog.show();
     }
 
     private int convertStringToValue(String valueStr) {
@@ -529,7 +722,7 @@ public class GofishActivity extends AppCompatActivity implements WebSocketListen
         Log.d(TAG, "updateCardsUI called");
 
         // Clear existing cards
-        for (CardView card : cards) {
+        for (com.example.androidexample.services.CardView card : cards) {
             rootLayout.removeView(card);
         }
         cards.clear();
@@ -557,7 +750,7 @@ public class GofishActivity extends AppCompatActivity implements WebSocketListen
         // Create card views from hand data
         for (CardState cardData : currentPlayer.hand) {
             Log.d(TAG, "Creating card: " + cardData.value + cardData.suit);
-            CardView card = createCardFromData(cardData.value, cardData.suit);
+            com.example.androidexample.services.CardView card = createCardFromData(cardData.value, cardData.suit);
             rootLayout.addView(card);
             cards.add(card);
         }
@@ -569,8 +762,8 @@ public class GofishActivity extends AppCompatActivity implements WebSocketListen
         animateCardsIntroduction();
     }
 
-    private CardView createCardFromData(String value, String suit) {
-        CardView card = new CardView(this);
+    private com.example.androidexample.services.CardView createCardFromData(String value, String suit) {
+        com.example.androidexample.services.CardView card = new com.example.androidexample.services.CardView(this);
         card.setId(View.generateViewId());
         card.setLayoutParams(new ConstraintLayout.LayoutParams(CARD_WIDTH, CARD_HEIGHT));
         card.setClickable(false); // Cards don't need to be selectable anymore
@@ -598,7 +791,7 @@ public class GofishActivity extends AppCompatActivity implements WebSocketListen
         set.applyTo(rootLayout);
     }
 
-    private void applyArcConstraints(ConstraintSet set, List<CardView> cardList) {
+    private void applyArcConstraints(ConstraintSet set, List<com.example.androidexample.services.CardView> cardList) {
         int n = cardList.size();
         if (n == 0) return;
 
@@ -606,7 +799,7 @@ public class GofishActivity extends AppCompatActivity implements WebSocketListen
         float angleStep = (n == 1) ? 0f : TOTAL_SPREAD / (n - 1);
 
         for (int i = 0; i < n; i++) {
-            CardView card = cardList.get(i);
+            com.example.androidexample.services.CardView card = cardList.get(i);
             int id = card.getId();
 
             set.connect(id, ConstraintSet.LEFT, rootLayout.getId(), ConstraintSet.LEFT, 0);
@@ -633,7 +826,7 @@ public class GofishActivity extends AppCompatActivity implements WebSocketListen
         float angleStep = (n == 1) ? 0f : TOTAL_SPREAD / (n - 1);
 
         for (int i = 0; i < n; i++) {
-            final CardView card = cards.get(i);
+            final com.example.androidexample.services.CardView card = cards.get(i);
             final float targetAngle = startAngle + i * angleStep;
             final int index = i;
 
