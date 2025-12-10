@@ -1,0 +1,245 @@
+Black Jack game:
+
+public BlackJackGame(String lobbyCode)
+
+public void setBroadcastFunction(Consumer<String> broadcastFunction)
+
+public void initializeGameFromLobby(String joinCode)
+
+public void startRound()
+
+public void setLobbyRepository(LobbyRepository repo)
+
+public void setAppUserRepository(AppUserRepository repo)
+
+public void setUserStatsRepository(UserStatsRepository repo)
+
+public void setBlackJackMatchHistoryRepository(BlackJackMatchHistoryRepository repo)
+
+public void initMatchHistory(String matchId)
+
+public void handlePlayerBet(String username, int amount)
+
+public void handlePlayerDecision(String username, String decision)
+
+private void advanceTurn()
+
+private void notifyCurrentPlayerTurn()
+
+private void dealInitialCards()
+
+private void takeBet(int bet, BlackJackPlayer player)
+
+public void playerStand(String username)
+
+public void playerHit(String username)
+
+public void playerDouble(String username)
+
+public void playerSplit(String username)
+
+public void playerLeave(String username)
+
+private void compareHandsAndResolveBets()
+
+public BlackJackPlayer getPlayer(String username)
+
+public boolean isRoundInProgress()
+
+public List<BlackJackPlayer> getPlayers()
+
+public BlackJackDealer getDealer()
+
+public String getLobbyCode()
+
+public Map<String, Object> toDTO()
+
+@Transactional public void updateStatsBlackjack()
+
+private void copyBlackjackStats(BlackjackStats src, BlackjackStats dst)
+
+Match History Logging
+
+public void logEvent(String player, String action, String card, Integer handIndex, Integer handValueAfter, Integer betAmount, Integer payoutAmount, String dealerUpCard, Integer dealerFinalValue)
+
+@Transactional public void saveMatchHistory()
+
+Black Jack Card:
+
+public BlackJackCard(int value, char suit)
+
+public void setIsShowing(boolean isShowing)
+
+public boolean getIsShowing()
+
+BlackJack Dealer:
+
+public BlackJackDealer(boolean hitOnSoft17)
+
+public BlackJackDealer()
+
+public void addCard(BlackJackCard card)
+
+public List<BlackJackCard> getHand()
+
+public void resetHand()
+
+Hand Value Calculation
+
+public int getHandValue()
+
+private boolean isSoft17()
+
+public void playTurn(BlackJackDeck deck)
+
+BlackJack Deck:
+
+public BlackJackDeck(int numberOfDecks)
+
+public void shuffle()
+
+public void printDeck()
+
+public BlackJackCard dealCard(boolean isShown)
+
+public int size()
+
+BlackJack Player:
+
+public BlackJackPlayer(String username, int chips)
+
+public BlackJackPlayer(AppUser appUser, int chips)
+
+public BlackjackStats getBlackJackStats()
+
+public AppUser getUserRef()
+
+public String getUsername()
+
+public List<BlackJackCard> getHand()
+
+public List<List<BlackJackCard>> getHands()
+
+public int getCurrentHandIndex()
+
+public void setCurrentHandIndex(int currentHandIndex)
+
+public void addCard(BlackJackCard card)
+
+public void addHand(List<BlackJackCard> hand, int bet)
+
+public void moveToNextHand()
+
+public boolean isOnLastHand()
+
+public int getChips()
+
+public void setChips(int chips)
+
+public int getBetOnCurrentHand()
+
+public void setBetOnCurrentHand(int bet)
+
+public List<Integer> getBets()
+
+public void resetAllBets()
+
+public boolean getHasStoodForHand()
+
+public void setHasStood(Boolean hasStood)
+
+public void resetAllHasStood()
+
+public boolean getHasBet()
+
+public void setHasBet(boolean hasBet)
+
+public int getHandValue()
+
+public int getHandValue(List<BlackJackCard> hand)
+
+public int calculateHandValue(List<BlackJackCard> hand)
+
+public boolean canSplit()
+
+public boolean canDouble()
+
+Blackjack Websocket:
+
+public void setLobbyRepository(LobbyRepository repo)
+
+public void setAppUserRepository(AppUserRepository repo)
+
+public void setUserStatsRepository(UserStatsRepository repo)
+
+public void setBlackJackMatchHistory(BlackJackMatchHistoryRepository repo)
+
+@OnOpen public void onOpen(Session session, String lobbyCode)
+
+@OnMessage public void onMessage(Session session, String message, String lobbyCode)
+
+@OnClose public void onClose(Session session, String lobbyCode)
+
+@OnError public void onError(Session session, Throwable throwable)
+
+private void broadcastToLobby(String json, String lobbyCode)
+
+private void broadcastGameState(BlackJackGame game, String lobbyCode)
+
+Black Jack History:
+
+Black Jack History Controller:
+
+getMatchById()
+
+getMatchesByPlayer()
+
+Black Jack Event Entity:
+
+getId()
+
+setId()
+
+getMatchHistory()
+
+setMatchHistory()
+
+getTimestamp()
+
+setTimestamp()
+
+getPlayer()
+
+setPlayer()
+
+getAction()
+
+setAction()
+
+getCard()
+
+setCard()
+
+getHandIndex()
+
+setHandIndex()
+
+getHandValueAfter()
+
+setHandValueAfter()
+
+getBetAmount()
+
+setBetAmount()
+
+getPayoutAmount()
+
+setPayoutAmount()
+
+getDealerUpCard()
+
+setDealerUpCard()
+
+getDealerFinalValue()
+
+setDealerFinalValue()
