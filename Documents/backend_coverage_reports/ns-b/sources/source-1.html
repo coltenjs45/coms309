@@ -1,0 +1,211 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > EuchreCard</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">data.Game.euchre</a>
+</div>
+
+<h1>Coverage Summary for Class: EuchreCard (data.Game.euchre)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">EuchreCard</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/34)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/20)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package data.Game.euchre;
+&nbsp;
+&nbsp;import com.fasterxml.jackson.annotation.JsonIgnore;
+&nbsp;import data.Game.MyCard;
+&nbsp;
+&nbsp;/**
+&nbsp; * Represents a Euchre-specific card with an assigned owner and
+&nbsp; * Euchre-based ranking rules, including trump and bower logic.
+&nbsp; */
+&nbsp;public class EuchreCard extends MyCard {
+&nbsp;    @JsonIgnore
+&nbsp;    private EuchrePlayer owner;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Constructor for a card
+&nbsp;     *
+&nbsp;     * @param value value of card
+&nbsp;     * @param suit suit of card
+&nbsp;     * @param owner owner of card
+&nbsp;     */
+&nbsp;    public EuchreCard(int value, char suit, EuchrePlayer owner) {
+<b class="nc">&nbsp;        super(value, suit);</b>
+<b class="nc">&nbsp;        this.owner = owner;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Gets the owner of the card
+&nbsp;     * @return owner
+&nbsp;     */
+&nbsp;    public EuchrePlayer getOwner() {
+<b class="nc">&nbsp;        if (owner == null) {</b>
+<b class="nc">&nbsp;            System.out.println(&quot;The &quot; + this.toString() + &quot; has no owner!&quot;);</b>
+<b class="nc">&nbsp;            return null;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return owner;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Changes the owner of the card
+&nbsp;     * @param player new owner
+&nbsp;     */
+&nbsp;    public void setOwner(EuchrePlayer player) {
+<b class="nc">&nbsp;        owner = player;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Computes the Euchre trump ranking value for this card
+&nbsp;     * based on the currently selected trump suit.
+&nbsp;     *
+&nbsp;     * &lt;p&gt;Special rules:&lt;/p&gt;
+&nbsp;     * &lt;ul&gt;
+&nbsp;     *   &lt;li&gt;Right bower (Jack of trump suit) gets the highest rank&lt;/li&gt;
+&nbsp;     *   &lt;li&gt;Left bower (Jack of same-color suit) gets the second-highest rank&lt;/li&gt;
+&nbsp;     *   &lt;li&gt;Other trump cards receive boosted ranking&lt;/li&gt;
+&nbsp;     * &lt;/ul&gt;
+&nbsp;     *
+&nbsp;     * @param trump the suit selected as trump
+&nbsp;     * @return modified value reflecting Euchre trump priority
+&nbsp;     */
+&nbsp;    public int getTrumpValue(char trump) {
+<b class="nc">&nbsp;        char effSuit = getEffectiveSuit(trump);</b>
+&nbsp;
+<b class="nc">&nbsp;        if (value == 11 &amp;&amp; suit == trump) return 16; // Right bower</b>
+<b class="nc">&nbsp;        if (value == 11 &amp;&amp; effSuit == trump) return 15; // Left bower</b>
+&nbsp;
+&nbsp;        // Standard trump ranking: A &gt; K &gt; Q &gt; 10 &gt; 9
+<b class="nc">&nbsp;        if (effSuit == trump) return value + 5;</b>
+&nbsp;
+<b class="nc">&nbsp;        return value;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Determines the effective suit of this card in Euchre.
+&nbsp;     * The left bower (Jack of the same-color suit) counts as trump.
+&nbsp;     *
+&nbsp;     * @param trumpSuit the suit chosen as trump
+&nbsp;     * @return the effective suit for this card, considering bower rules
+&nbsp;     */
+&nbsp;    public char getEffectiveSuit(char trumpSuit) {
+&nbsp;        // Right bower: Jack of trump
+<b class="nc">&nbsp;        if (value == 11 &amp;&amp; suit == trumpSuit) {</b>
+<b class="nc">&nbsp;            return trumpSuit;</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // Left bower: Jack of same-color suit
+<b class="nc">&nbsp;        if (value == 11) {</b>
+<b class="nc">&nbsp;            if (trumpSuit == &#39;h&#39; &amp;&amp; suit == &#39;d&#39;) return &#39;h&#39;;</b>
+<b class="nc">&nbsp;            if (trumpSuit == &#39;d&#39; &amp;&amp; suit == &#39;h&#39;) return &#39;d&#39;;</b>
+<b class="nc">&nbsp;            if (trumpSuit == &#39;c&#39; &amp;&amp; suit == &#39;s&#39;) return &#39;c&#39;;</b>
+<b class="nc">&nbsp;            if (trumpSuit == &#39;s&#39; &amp;&amp; suit == &#39;c&#39;) return &#39;s&#39;;</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        return suit;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-12-10 15:33</div>
+</div>
+</body>
+</html>

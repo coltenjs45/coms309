@@ -1,0 +1,129 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > LobbyRepository</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">data.Lobby</a>
+</div>
+
+<h1>Coverage Summary for Class: LobbyRepository (data.Lobby)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">LobbyRepository</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package data.Lobby;
+&nbsp;
+&nbsp;import org.springframework.data.jpa.repository.JpaRepository;
+&nbsp;import org.springframework.data.jpa.repository.Query;
+&nbsp;import org.springframework.data.repository.query.Param;
+&nbsp;import org.springframework.transaction.annotation.Transactional;
+&nbsp;
+&nbsp;/**
+&nbsp; * Repository interface for {@link Lobby} entities.
+&nbsp; * Provides methods for CRUD operations and custom queries based on join codes.
+&nbsp; */
+&nbsp;public interface LobbyRepository extends JpaRepository&lt;Lobby, Long&gt;  {
+&nbsp;    /**
+&nbsp;     * Finds a lobby by its ID.
+&nbsp;     *
+&nbsp;     * @param lobbyID the ID of the lobby
+&nbsp;     * @return the {@link Lobby} entity if found, otherwise null
+&nbsp;     */
+&nbsp;    Lobby findById(long lobbyID);
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Deletes a lobby by its ID.
+&nbsp;     *
+&nbsp;     * @param lobbyID the ID of the lobby to delete
+&nbsp;     */
+&nbsp;    @Transactional
+&nbsp;    void deleteById(long lobbyID);
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Finds a lobby by its join code.
+&nbsp;     *
+&nbsp;     * @param joinCode the join code of the lobby
+&nbsp;     * @return the {@link Lobby} entity if found, otherwise null
+&nbsp;     */
+&nbsp;    Lobby findByJoinCode(String joinCode);
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Deletes a lobby by its join code.
+&nbsp;     *
+&nbsp;     * @param joinCode the join code of the lobby to delete
+&nbsp;     */
+&nbsp;    @Transactional
+&nbsp;    void deleteByJoinCode(String joinCode);
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Checks whether a lobby exists with the given join code.
+&nbsp;     *
+&nbsp;     * @param joinCode the join code to check
+&nbsp;     * @return true if a lobby exists with the given join code, false otherwise
+&nbsp;     */
+&nbsp;    boolean existsByJoinCode(String joinCode);
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Finds a lobby by its join code and fetches the associated users in the same query.
+&nbsp;     *
+&nbsp;     * @param joinCode the join code of the lobby
+&nbsp;     * @return the {@link Lobby} entity with its users loaded, or null if not found
+&nbsp;     */
+&nbsp;    @Query(&quot;SELECT l FROM Lobby l LEFT JOIN FETCH l.users WHERE l.joinCode = :joinCode&quot;)
+&nbsp;    Lobby findByJoinCodeWithUsers(@Param(&quot;joinCode&quot;) String joinCode);
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-12-10 15:33</div>
+</div>
+</body>
+</html>

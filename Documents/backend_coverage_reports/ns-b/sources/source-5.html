@@ -1,0 +1,410 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > EuchreService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">data.Game.euchre</a>
+</div>
+
+<h1>Coverage Summary for Class: EuchreService (data.Game.euchre)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">EuchreService</td>
+<td class="coverageStat">
+  <span class="percent">
+    6.7%
+  </span>
+  <span class="absValue">
+    (1/15)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/78)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    2.8%
+  </span>
+  <span class="absValue">
+    (3/107)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">EuchreService$$SpringCGLIB$$0</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    6.7%
+  </span>
+  <span class="absValue">
+    (1/15)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/78)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    2.8%
+  </span>
+  <span class="absValue">
+    (3/107)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package data.Game.euchre;
+&nbsp;
+&nbsp;import data.Game.euchre.history.EuchreMatchHistoryRepository;
+&nbsp;import data.User.AppUser;
+&nbsp;import data.User.AppUserRepository;
+&nbsp;import data.User.Stats.EuchreStats;
+&nbsp;import data.User.Stats.GameStats;
+&nbsp;import data.User.Stats.UserStats;
+&nbsp;import data.User.Stats.UserStatsRepository;
+&nbsp;import jakarta.transaction.Transactional;
+&nbsp;import jakarta.websocket.Session;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;
+&nbsp;import java.time.LocalDateTime;
+&nbsp;import java.util.*;
+&nbsp;import java.util.concurrent.ConcurrentHashMap;
+&nbsp;
+&nbsp;/**
+&nbsp; * Service similar to GoFishService adapted to Euchre.
+&nbsp; * Responsibilities:
+&nbsp; *  - create and store active EuchreGame instances
+&nbsp; *  - manage lobby sessions (map of lobbyCode -&gt; sessions)
+&nbsp; *  - process basic actions: start, pass, choose suit, pick up, play
+&nbsp; *  - persist stats on endGame
+&nbsp; */
+&nbsp;@Service
+<b class="fc">&nbsp;public class EuchreService {</b>
+&nbsp;    @Autowired
+&nbsp;    private AppUserRepository appUserRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private UserStatsRepository userStatsRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private EuchreMatchHistoryRepository euchreMatchHistoryRepository;
+&nbsp;
+<b class="fc">&nbsp;    private final Map&lt;String, EuchreGame&gt; activeGames = new ConcurrentHashMap&lt;&gt;();</b>
+<b class="fc">&nbsp;    private final Map&lt;String, Set&lt;Session&gt;&gt; lobbyPlayers = new ConcurrentHashMap&lt;&gt;();</b>
+&nbsp;
+&nbsp;    @Transactional
+&nbsp;    public EuchreGame startGame(String lobbyCode, List&lt;String&gt; usernames) {
+&nbsp;        // Add players to list, if username not recognized use &quot;Guest&quot;
+<b class="nc">&nbsp;        List&lt;EuchrePlayer&gt; players = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;        for (String name : usernames) {</b>
+<b class="nc">&nbsp;            AppUser user = appUserRepository.findByUsernameWithStats(name);</b>
+<b class="nc">&nbsp;            if (user != null) {</b>
+<b class="nc">&nbsp;                players.add(new EuchrePlayer(user));</b>
+&nbsp;            } else {
+&nbsp;                // fallback to simple player
+<b class="nc">&nbsp;                players.add(new EuchrePlayer(name));</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        EuchreGame game = new EuchreGame(players);</b>
+&nbsp;
+&nbsp;        // Inititalize Match History
+<b class="nc">&nbsp;        game.initMatchHistory(lobbyCode);</b>
+<b class="nc">&nbsp;        game.getMatchHistory().setStartTime(LocalDateTime.now());</b>
+&nbsp;
+<b class="nc">&nbsp;        game.startGame();</b>
+<b class="nc">&nbsp;        activeGames.put(lobbyCode, game);</b>
+<b class="nc">&nbsp;        return game;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void addPlayerToLobby(String lobbyCode, Session session) {
+<b class="nc">&nbsp;        lobbyPlayers.computeIfAbsent(lobbyCode, k -&gt; ConcurrentHashMap.newKeySet()).add(session);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void removePlayerFromLobby(String lobbyCode, Session session) {
+<b class="nc">&nbsp;        Set&lt;Session&gt; sessions = lobbyPlayers.get(lobbyCode);</b>
+<b class="nc">&nbsp;        if (sessions != null) sessions.remove(session);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public EuchreGame getGame(String lobbyCode) {
+<b class="nc">&nbsp;        return activeGames.get(lobbyCode);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Transactional
+&nbsp;    public void endGame(String lobbyCode) {
+<b class="nc">&nbsp;        EuchreGame game = activeGames.get(lobbyCode);</b>
+<b class="nc">&nbsp;        if (game == null) return;</b>
+&nbsp;
+<b class="nc">&nbsp;        for (EuchrePlayer player : game.getPlayers()) {</b>
+<b class="nc">&nbsp;            AppUser detached = player.getUserRef();</b>
+<b class="nc">&nbsp;            if (detached == null) continue;</b>
+&nbsp;
+&nbsp;            // Load the managed user from DB
+<b class="nc">&nbsp;            AppUser managed = appUserRepository.findById(detached.getUserID());</b>
+<b class="nc">&nbsp;            if (managed == null) continue;</b>
+&nbsp;
+&nbsp;            // Ensure managed has UserStats
+<b class="nc">&nbsp;            if (managed.getUserStats() == null) {</b>
+<b class="nc">&nbsp;                managed.setUserStats(new UserStats());</b>
+<b class="nc">&nbsp;                managed.getUserStats().setAppUser(managed);</b>
+&nbsp;            }
+&nbsp;
+&nbsp;            // Get or create EuchreStats
+<b class="nc">&nbsp;            GameStats detachedStats = detached.getUserStats().getGameStats(&quot;Euchre&quot;);</b>
+<b class="nc">&nbsp;            GameStats managedStats = managed.getUserStats().getGameStats(&quot;Euchre&quot;);</b>
+&nbsp;
+<b class="nc">&nbsp;            if (detachedStats instanceof EuchreStats &amp;&amp; managedStats instanceof EuchreStats) {</b>
+<b class="nc">&nbsp;                copyEuchreStats((EuchreStats) detachedStats, (EuchreStats) managedStats);</b>
+<b class="nc">&nbsp;            } else if (detachedStats instanceof EuchreStats &amp;&amp; managedStats == null) {</b>
+<b class="nc">&nbsp;                EuchreStats newStats = new EuchreStats();</b>
+<b class="nc">&nbsp;                copyEuchreStats((EuchreStats) detachedStats, newStats);</b>
+<b class="nc">&nbsp;                newStats.setUserStats(managed.getUserStats());</b>
+<b class="nc">&nbsp;                managed.getUserStats().addGameStats(&quot;Euchre&quot;, newStats);</b>
+&nbsp;            }
+&nbsp;
+&nbsp;            // Persist the managed user
+<b class="nc">&nbsp;            appUserRepository.save(managed);</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        saveMatchHistory(game, game.getWinner().getTeamMembersAsStrings());</b>
+&nbsp;
+<b class="nc">&nbsp;        activeGames.remove(lobbyCode);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;    private void copyEuchreStats(EuchreStats src, EuchreStats dst) {
+&nbsp;        // copy relevant fields existing on EuchreStats
+<b class="nc">&nbsp;        dst.setGamesPlayed(src.getGamesPlayed());</b>
+<b class="nc">&nbsp;        dst.setGamesWon(src.getGamesWon());</b>
+<b class="nc">&nbsp;        dst.setTricksTaken(src.getTricksTaken());</b>
+<b class="nc">&nbsp;        dst.setSweepsWon(src.getSweepsWon());</b>
+<b class="nc">&nbsp;        dst.setTimesGoneAlone(src.getTimesGoneAlone());</b>
+<b class="nc">&nbsp;        dst.setTimesPickedUp(src.getTimesPickedUp());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * TEST ONLY — Forces a game to end immediately so stats + history saving can be verified.
+&nbsp;     */
+&nbsp;    public void forceEndGameForTesting(String lobbyCode) {
+&nbsp;
+<b class="nc">&nbsp;        EuchreGame game = activeGames.get(lobbyCode);</b>
+<b class="nc">&nbsp;        if (game == null) {</b>
+<b class="nc">&nbsp;            System.out.println(&quot;No game found for lobby: &quot; + lobbyCode);</b>
+&nbsp;            return;
+&nbsp;        }
+&nbsp;
+&nbsp;        // Force Team One to win by giving them a winning score
+<b class="nc">&nbsp;        game.getTeamOne().setScore(2);</b>
+&nbsp;
+&nbsp;        // OR: force team two to win
+&nbsp;        // game.getTeamTwo().setScore(2);
+&nbsp;
+&nbsp;        // Make sure players exist + stats exist
+<b class="nc">&nbsp;        for (EuchrePlayer player : game.getPlayers()) {</b>
+<b class="nc">&nbsp;            if (player.getUserRef().getUserStats() == null) {</b>
+<b class="nc">&nbsp;                UserStats stats = new UserStats();</b>
+<b class="nc">&nbsp;                stats.setAppUser(player.getUserRef());</b>
+<b class="nc">&nbsp;                player.getUserRef().setUserStats(stats);</b>
+&nbsp;
+&nbsp;                // Add Euchre stats so your endGame() logic won&#39;t break
+<b class="nc">&nbsp;                EuchreStats es = new EuchreStats();</b>
+<b class="nc">&nbsp;                stats.addGameStats(&quot;Euchre&quot;, es);</b>
+<b class="nc">&nbsp;                es.setUserStats(stats);</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+&nbsp;        // NOW call your real endGame()
+<b class="nc">&nbsp;        endGame(lobbyCode);</b>
+&nbsp;
+<b class="nc">&nbsp;        System.out.println(&quot;Force-ended game for testing (winner: Team One).&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // -- Game action processors --
+&nbsp;
+&nbsp;    public String processPass(String lobbyCode, String username) {
+<b class="nc">&nbsp;        EuchreGame game = activeGames.get(lobbyCode);</b>
+<b class="nc">&nbsp;        if (game == null) return &quot;No active game for lobby &quot; + lobbyCode;</b>
+<b class="nc">&nbsp;        if (!username.equals(game.getCurrentPlayerUsername())) return username + &quot; is not the current player! It is &quot; + game.getCurrentPlayerUsername() + &quot;&#39;s turn!&quot;;</b>
+<b class="nc">&nbsp;        game.playerPasses();</b>
+<b class="nc">&nbsp;        return username + &quot; passed.&quot;;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String processChooseSuit(String lobbyCode, String username, char suit) {
+<b class="nc">&nbsp;        EuchreGame game = activeGames.get(lobbyCode);</b>
+<b class="nc">&nbsp;        if (game == null) return &quot;No active game for lobby &quot; + lobbyCode;</b>
+&nbsp;
+&nbsp;        // only allows current player to choose suit
+<b class="nc">&nbsp;        game.playerChoosesSuit(suit);</b>
+<b class="nc">&nbsp;        return username + &quot; chose &quot; + game.charSuitToString(suit) + &quot; as trump.&quot;;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String processPickUp(String lobbyCode, String dealerUsername, int value, char suit) {
+<b class="nc">&nbsp;        EuchreGame game = activeGames.get(lobbyCode);</b>
+<b class="nc">&nbsp;        if (game == null) return &quot;No active game for lobby &quot; + lobbyCode;</b>
+&nbsp;
+<b class="nc">&nbsp;        EuchrePlayer dealer = findPlayerByUsername(game, dealerUsername);</b>
+<b class="nc">&nbsp;        if (dealer == null) return &quot;Dealer not found: &quot; + dealerUsername;</b>
+<b class="nc">&nbsp;        if (!dealerUsername.equals(game.getCurrentDealerUsername())) return dealerUsername + &quot; is not the current dealer! The dealer is &quot; + game.getCurrentDealerUsername();</b>
+&nbsp;
+&nbsp;        // find the actual card object in dealer&#39;s hand that matches value and suit
+<b class="nc">&nbsp;        EuchreCard dropped = findCardInHand(dealer, value, suit);</b>
+<b class="nc">&nbsp;        if (dropped == null) return &quot;Dropped card not found in dealer&#39;s hand.&quot;;</b>
+&nbsp;
+<b class="nc">&nbsp;        boolean success = game.playerPicksUp(dropped);</b>
+<b class="nc">&nbsp;        return success ? dealerUsername + &quot; picked up the option card. &quot; + game.getOptionCard().suitConverter(game.getOptionCard().getSuit()) + &quot; are trump!&quot; + &quot; It is now &quot; + game.getCurrentPlayerUsername() + &quot;&#39;s Turn!&quot; : &quot;Pick up failed.&quot;;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String processPlay(String lobbyCode, String username, int value, char suit) {
+<b class="nc">&nbsp;        EuchreGame game = activeGames.get(lobbyCode);</b>
+<b class="nc">&nbsp;        if (game == null) return &quot;No active game for lobby &quot; + lobbyCode;</b>
+&nbsp;
+<b class="nc">&nbsp;        EuchrePlayer player = findPlayerByUsername(game, username);</b>
+<b class="nc">&nbsp;        if (player == null) return &quot;Player not found: &quot; + username;</b>
+<b class="nc">&nbsp;        if (!player.getUsername().equals(game.getCurrentPlayerUsername())) return username + &quot; is not the current player! It is &quot; + game.getCurrentPlayerUsername() + &quot;&#39;s turn!&quot;;</b>
+&nbsp;
+<b class="nc">&nbsp;        EuchreCard card = findCardInHand(player, value, suit);</b>
+<b class="nc">&nbsp;        if (card == null) return username + &quot; does not have that card.&quot;;</b>
+&nbsp;
+<b class="nc">&nbsp;        String result = game.takeTurn(player, card);</b>
+&nbsp;
+&nbsp;        // If trick complete (4 cards) give trick
+<b class="nc">&nbsp;        if (game.getCurrentTrick().size() == 4) {</b>
+<b class="nc">&nbsp;            if (game.getPlayers() != null) {</b>
+&nbsp;                try {
+<b class="nc">&nbsp;                    game.giveTrick();</b>
+&nbsp;                } catch (Exception ex) {
+&nbsp;                    // ignore; keep server robust
+&nbsp;                }
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+&nbsp;        // If all tricks have been played, add them up and give points
+<b class="nc">&nbsp;        if (game.getPlayers().get(0).getHand().isEmpty() &amp;&amp; game.getPlayers().get(1).getHand().isEmpty() &amp;&amp; game.getPlayers().get(2).getHand().isEmpty() &amp;&amp; game.getPlayers().get(3).getHand().isEmpty()) {</b>
+<b class="nc">&nbsp;            game.givePoints();</b>
+&nbsp;
+&nbsp;            // Check for end of game condition
+<b class="nc">&nbsp;            EuchreTeam winnerTeam = game.getWinner();</b>
+<b class="nc">&nbsp;            if (winnerTeam != null) {</b>
+&nbsp;                // We have a winning team; persist and remove game
+<b class="nc">&nbsp;                endGame(lobbyCode);</b>
+<b class="nc">&nbsp;                return result + &quot; | Game over! Winning team score: &quot; + winnerTeam.getScore();</b>
+&nbsp;            } else {
+&nbsp;                // Winner was not found, begin new round
+<b class="nc">&nbsp;                game.startNewRound();</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+&nbsp;
+&nbsp;
+<b class="nc">&nbsp;        return result;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // -- helpers --
+&nbsp;
+&nbsp;    private EuchrePlayer findPlayerByUsername(EuchreGame game, String username) {
+<b class="nc">&nbsp;        for (EuchrePlayer p : game.getPlayers()) {</b>
+<b class="nc">&nbsp;            if (p.getUsername().equals(username)) return p;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private EuchreCard findCardInHand(EuchrePlayer player, int value, char suit) {
+<b class="nc">&nbsp;        for (EuchreCard c : player.getHand()) {</b>
+<b class="nc">&nbsp;            if (c.getValue() == value &amp;&amp; c.getSuit() == suit) return c;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Saves the data from the game
+&nbsp;     * @param game current game
+&nbsp;     * @param winningTeam winning team
+&nbsp;     */
+&nbsp;    @Transactional
+&nbsp;    public void saveMatchHistory(EuchreGame game, List&lt;String&gt; winningTeam) {
+<b class="nc">&nbsp;        game.getMatchHistory().setWinningPlayers(winningTeam);</b>
+<b class="nc">&nbsp;        game.getMatchHistory().setEndTime(LocalDateTime.now());</b>
+<b class="nc">&nbsp;        euchreMatchHistoryRepository.save(game.getMatchHistory());</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-12-10 15:33</div>
+</div>
+</body>
+</html>

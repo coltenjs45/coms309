@@ -1,0 +1,232 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > Crazy8Player</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">data.Game.Crazy8</a>
+</div>
+
+<h1>Coverage Summary for Class: Crazy8Player (data.Game.Crazy8)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Crazy8Player</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/16)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package data.Game.Crazy8;
+&nbsp;import data.User.AppUser;
+&nbsp;import data.User.Stats.Crazy8Stats;
+&nbsp;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;/**
+&nbsp; * Represents a player in a Crazy 8s game.
+&nbsp; * &lt;p&gt;
+&nbsp; * A player may be created from a simple username (guest player) or from an
+&nbsp; * {@link AppUser} object when tied to backend user statistics. The player
+&nbsp; * stores a hand of {@link Crazy8Card} objects and optionally provides access
+&nbsp; * to {@link Crazy8Stats} for database-tracked players.
+&nbsp; */
+&nbsp;public class Crazy8Player {
+&nbsp;    /**
+&nbsp;     * The player&#39;s username.
+&nbsp;     */
+&nbsp;    private String username;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * The list of cards currently held by the player.
+&nbsp;     */
+&nbsp;    private List&lt;Crazy8Card&gt; hand;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * A reference to the backend AppUser associated with this player.
+&nbsp;     * &lt;p&gt;
+&nbsp;     * Marked {@code transient} to avoid serialization.
+&nbsp;     */
+&nbsp;    private transient AppUser userRef;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Creates a Crazy 8 player with a generic username and no statistical tracking.
+&nbsp;     *
+&nbsp;     * @param username the player&#39;s display name
+&nbsp;     */
+<b class="nc">&nbsp;    public Crazy8Player(String username) {</b>
+<b class="nc">&nbsp;        this.username = username;</b>
+<b class="nc">&nbsp;        this.hand = new ArrayList&lt;&gt;();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Creates a Crazy 8 player backed by an {@link AppUser}, enabling stat tracking.
+&nbsp;     *
+&nbsp;     * @param user the backend user associated with this player
+&nbsp;     */
+<b class="nc">&nbsp;    public Crazy8Player(AppUser user) {</b>
+<b class="nc">&nbsp;        this.username = user.getUsername();</b>
+<b class="nc">&nbsp;        this.userRef = user;</b>
+<b class="nc">&nbsp;        this.hand = new ArrayList&lt;&gt;();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Returns the backend user reference for this player.
+&nbsp;     *
+&nbsp;     * @return the associated {@link AppUser}, or {@code null} if none
+&nbsp;     */
+<b class="nc">&nbsp;    public AppUser getUserRef() { return userRef; }</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Returns the tracked Crazy 8 statistics for this user, if applicable.
+&nbsp;     *
+&nbsp;     * @return the associated {@link Crazy8Stats} object, or {@code null} if stats are unavailable
+&nbsp;     */
+&nbsp;    public Crazy8Stats getCrazy8Stats() {
+<b class="nc">&nbsp;        if (userRef != null &amp;&amp; userRef.getUserStats() != null) {</b>
+<b class="nc">&nbsp;            return (Crazy8Stats) userRef.getUserStats().getGameStats(&quot;Crazy8&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Returns the username of the player.
+&nbsp;     *
+&nbsp;     * @return the username
+&nbsp;     */
+&nbsp;    public String getUsername() {
+<b class="nc">&nbsp;        return username;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Returns the cards currently in the player&#39;s hand.
+&nbsp;     *
+&nbsp;     * @return a list of {@link Crazy8Card} objects
+&nbsp;     */
+&nbsp;    public List&lt;Crazy8Card&gt; getHand() {
+<b class="nc">&nbsp;        return hand;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Returns the number of cards in the player&#39;s hand.
+&nbsp;     *
+&nbsp;     * @return the hand size
+&nbsp;     */
+<b class="nc">&nbsp;    public int getHandSize() { return hand.size(); }</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Adds a card to the player&#39;s hand.
+&nbsp;     *
+&nbsp;     * @param card the {@link Crazy8Card} to add
+&nbsp;     */
+&nbsp;    public void addCard(Crazy8Card card) {
+<b class="nc">&nbsp;        hand.add(card);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Removes a card from the player&#39;s hand.
+&nbsp;     * If the card appears multiple times, only the first occurrence is removed.
+&nbsp;     *
+&nbsp;     * @param card the {@link Crazy8Card} to remove
+&nbsp;     */
+<b class="nc">&nbsp;    public void removeCard(Crazy8Card card) { hand.remove(card); }</b>
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-12-10 15:33</div>
+</div>
+</body>
+</html>

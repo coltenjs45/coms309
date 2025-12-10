@@ -1,0 +1,240 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > OwnerController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.springframework.samples.petclinic.owner</a>
+</div>
+
+<h1>Coverage Summary for Class: OwnerController (org.springframework.samples.petclinic.owner)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">OwnerController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/29)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/*
+&nbsp; * Copyright 2002-2013 the original author or authors.
+&nbsp; *
+&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+&nbsp; * you may not use this file except in compliance with the License.
+&nbsp; * You may obtain a copy of the License at
+&nbsp; *
+&nbsp; *      http://www.apache.org/licenses/LICENSE-2.0
+&nbsp; *
+&nbsp; * Unless required by applicable law or agreed to in writing, software
+&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+&nbsp; * See the License for the specific language governing permissions and
+&nbsp; * limitations under the License.
+&nbsp; */
+&nbsp;package org.springframework.samples.petclinic.owner;
+&nbsp;
+&nbsp;import org.slf4j.Logger;
+&nbsp;import org.slf4j.LoggerFactory;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Optional;
+&nbsp;
+&nbsp;/**
+&nbsp; * @author Juergen Hoeller
+&nbsp; * @author Ken Krebs
+&nbsp; * @author Arjen Poutsma
+&nbsp; * @author Michael Isvy
+&nbsp; * @Modified By Tanmay Ghosh
+&nbsp; * @Modified By Vivek Bengre
+&nbsp; */
+&nbsp;@RestController
+<b class="nc">&nbsp;class OwnerController {</b>
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    OwnerRepository ownersRepository;
+&nbsp;
+<b class="nc">&nbsp;    private final Logger logger = LoggerFactory.getLogger(OwnerController.class);</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method adds a new owner
+&nbsp;     * @param owner
+&nbsp;     * @return
+&nbsp;     */
+&nbsp;    @RequestMapping(method = RequestMethod.POST, path = &quot;/owners/new&quot;)
+&nbsp;    public String saveOwner(Owners owner) {
+<b class="nc">&nbsp;        ownersRepository.save(owner);</b>
+<b class="nc">&nbsp;        return &quot;New Owner &quot;+ owner.getFirstName() + &quot; Saved&quot;;</b>
+&nbsp;    }
+&nbsp;     // function just to create dummy data
+&nbsp;    @RequestMapping(method = RequestMethod.GET, path = &quot;/owner/create&quot;)
+&nbsp;    public String createDummyData() {
+<b class="nc">&nbsp;        Owners o1 = new Owners(1, &quot;John&quot;, &quot;Doe&quot;, &quot;404 Not found&quot;, &quot;some numbers&quot;);</b>
+<b class="nc">&nbsp;        Owners o2 = new Owners(2, &quot;Jane&quot;, &quot;Doe&quot;, &quot;Its a secret&quot;, &quot;you wish&quot;);</b>
+<b class="nc">&nbsp;        Owners o3 = new Owners(3, &quot;Some&quot;, &quot;Pleb&quot;, &quot;Right next to the Library&quot;, &quot;515-345-41213&quot;);</b>
+<b class="nc">&nbsp;        Owners o4 = new Owners(4, &quot;Chad&quot;, &quot;Champion&quot;, &quot;Reddit memes corner&quot;, &quot;420-420-4200&quot;);</b>
+<b class="nc">&nbsp;        ownersRepository.save(o1);</b>
+<b class="nc">&nbsp;        ownersRepository.save(o2);</b>
+<b class="nc">&nbsp;        ownersRepository.save(o3);</b>
+<b class="nc">&nbsp;        ownersRepository.save(o4);</b>
+<b class="nc">&nbsp;        return &quot;Successfully created dummy data&quot;;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method GETS all of the owners
+&nbsp;     * @return
+&nbsp;     */
+&nbsp;    @RequestMapping(method = RequestMethod.GET, path = &quot;/owners&quot;)
+&nbsp;    public List&lt;Owners&gt; getAllOwners() {
+<b class="nc">&nbsp;        logger.info(&quot;Entered into Controller Layer&quot;);</b>
+<b class="nc">&nbsp;        List&lt;Owners&gt; results = ownersRepository.findAll();</b>
+<b class="nc">&nbsp;        logger.info(&quot;Number of Records Fetched:&quot; + results.size());</b>
+<b class="nc">&nbsp;        return results;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method GETS an owner based off of its ID
+&nbsp;     * @param id
+&nbsp;     * @return
+&nbsp;     */
+&nbsp;    @RequestMapping(method = RequestMethod.GET, path = &quot;/owners/id/{ownerId}&quot;)
+&nbsp;    public Optional&lt;Owners&gt; findOwnerById(@PathVariable(&quot;ownerId&quot;) int id) {
+<b class="nc">&nbsp;        logger.info(&quot;Entered into Controller Layer&quot;);</b>
+<b class="nc">&nbsp;        Optional&lt;Owners&gt; results = ownersRepository.findById(id);</b>
+<b class="nc">&nbsp;        return results;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Delete method to remove an owner from the list
+&nbsp;     * @param id
+&nbsp;     * @return
+&nbsp;     */
+&nbsp;    @DeleteMapping(&quot;/owners/{ownerId}&quot;)
+&nbsp;    public String returnDeletedOwner(@PathVariable(&quot;ownerId&quot;) int id) {
+&nbsp;        // Get the owner from the repository
+<b class="nc">&nbsp;        Owners DeletedOwner = ownersRepository.findById(id).get();</b>
+&nbsp;
+&nbsp;        // Delete owner and log
+<b class="nc">&nbsp;        ownersRepository.deleteById(id);</b>
+<b class="nc">&nbsp;        logger.info(&quot;Deleted user from database&quot;);</b>
+&nbsp;
+&nbsp;        // Return string telling user what owner was deleted
+<b class="nc">&nbsp;        return &quot;Deleted &quot; + DeletedOwner.getFirstName() + &quot; &quot; + DeletedOwner.getLastName() + &quot; from the list.&quot;;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Find an owner by First Name
+&nbsp;     * @param name
+&nbsp;     * @return
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/owners/first/{ownerName}&quot;)
+&nbsp;    public Owners findOwnerByName(@PathVariable(&quot;ownerName&quot;) String name) {
+<b class="nc">&nbsp;        List&lt;Owners&gt; allOwners = ownersRepository.findAll();</b>
+<b class="nc">&nbsp;        for (Owners o:allOwners) {</b>
+<b class="nc">&nbsp;            if (o.getFirstName().equals(name)) {</b>
+<b class="nc">&nbsp;                return o;</b>
+&nbsp;            }
+&nbsp;        }
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-12-10 15:33</div>
+</div>
+</body>
+</html>

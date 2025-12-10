@@ -1,0 +1,157 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > Main</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">onetoone</a>
+</div>
+
+<h1>Coverage Summary for Class: Main (onetoone)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Main</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/15)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package onetoone;
+&nbsp;
+&nbsp;import org.springframework.boot.CommandLineRunner;
+&nbsp;import org.springframework.boot.SpringApplication;
+&nbsp;import org.springframework.boot.autoconfigure.SpringBootApplication;
+&nbsp;import org.springframework.context.annotation.Bean;
+&nbsp;
+&nbsp;import onetoone.Laptops.Laptop;
+&nbsp;import onetoone.Laptops.LaptopRepository;
+&nbsp;import onetoone.Persons.Person;
+&nbsp;import onetoone.Persons.PersonRepository;
+&nbsp;
+&nbsp;/**
+&nbsp; * 
+&nbsp; * @author Vivek Bengre
+&nbsp; * 
+&nbsp; */ 
+&nbsp;
+&nbsp;@SpringBootApplication
+<b class="nc">&nbsp;class Main {</b>
+&nbsp;
+&nbsp;    public static void main(String[] args) {
+<b class="nc">&nbsp;        SpringApplication.run(Main.class, args);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Create 3 Persons with their machines
+&nbsp;    /**
+&nbsp;     * 
+&nbsp;     * @param PersonRepository repository for the Person entity
+&nbsp;     * @param laptopRepository repository for the Laptop entity
+&nbsp;     * Creates a commandLine runner to enter dummy data into the database
+&nbsp;     * As mentioned in Person.java just associating the Laptop object with the Person will save it into the database because of the CascadeType
+&nbsp;     */
+&nbsp;    @Bean
+&nbsp;    CommandLineRunner initPerson(PersonRepository PersonRepository, LaptopRepository laptopRepository) {
+<b class="nc">&nbsp;        return args -&gt; {</b>
+<b class="nc">&nbsp;            Person Person1 = new Person(&quot;John&quot;, &quot;john@somemail.com&quot;);</b>
+<b class="nc">&nbsp;            Person Person2 = new Person(&quot;Jane&quot;, &quot;jane@somemail.com&quot;);</b>
+<b class="nc">&nbsp;            Person Person3 = new Person(&quot;Justin&quot;, &quot;justin@somemail.com&quot;);</b>
+<b class="nc">&nbsp;            Laptop laptop1 = new Laptop( 2.5, 4, 8, &quot;Lenovo&quot;, 300);</b>
+<b class="nc">&nbsp;            Laptop laptop2 = new Laptop( 4.1, 8, 16, &quot;Hp&quot;, 800);</b>
+<b class="nc">&nbsp;            Laptop laptop3 = new Laptop( 3.5, 32, 32, &quot;Dell&quot;, 2300);  </b>
+<b class="nc">&nbsp;            Person1.setLaptop(laptop1);</b>
+<b class="nc">&nbsp;            Person2.setLaptop(laptop2);</b>
+<b class="nc">&nbsp;            Person3.setLaptop(laptop3);            </b>
+<b class="nc">&nbsp;            PersonRepository.save(Person1);</b>
+<b class="nc">&nbsp;            PersonRepository.save(Person2);</b>
+<b class="nc">&nbsp;            PersonRepository.save(Person3);</b>
+&nbsp;
+&nbsp;        };
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-12-10 15:33</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,240 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > EuchreTeam</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">data.Game.euchre</a>
+</div>
+
+<h1>Coverage Summary for Class: EuchreTeam (data.Game.euchre)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">EuchreTeam</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/13)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/24)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package data.Game.euchre;
+&nbsp;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;/**
+&nbsp; * Represents a team of two players in a Euchre game. Tracks the team&#39;s
+&nbsp; * members, score, number of tricks taken in the current round, and other
+&nbsp; * team-specific statuses such as whether the team picked up the card or
+&nbsp; * if a member went alone.
+&nbsp; */
+&nbsp;public class EuchreTeam {
+&nbsp;    private List&lt;EuchrePlayer&gt; teamMembers;
+&nbsp;    private int score;
+&nbsp;    private int tricksTaken;
+&nbsp;    private boolean teamPickedUpCard;
+&nbsp;    private boolean teamMemberWhenAlone;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Creates a basic team
+&nbsp;     * @param member1 (player1)
+&nbsp;     * @param member2 (player2)
+&nbsp;     */
+<b class="nc">&nbsp;    public EuchreTeam(EuchrePlayer member1, EuchrePlayer member2) {</b>
+<b class="nc">&nbsp;        teamMembers = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;        teamMembers.add(member1);</b>
+<b class="nc">&nbsp;        teamMembers.add(member2);</b>
+<b class="nc">&nbsp;        teamPickedUpCard = false;</b>
+<b class="nc">&nbsp;        teamMemberWhenAlone = false;</b>
+<b class="nc">&nbsp;        score = 0;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Gets the score
+&nbsp;     * @return score
+&nbsp;     */
+&nbsp;    public int getScore() {
+<b class="nc">&nbsp;        return score;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Sets the score (used for testing)
+&nbsp;     * @param score score
+&nbsp;     */
+<b class="nc">&nbsp;    public void setScore(int score) { this.score = score; }</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Gets the members of the team
+&nbsp;     * @return teamMembers
+&nbsp;     */
+&nbsp;    public List&lt;EuchrePlayer&gt; getTeamMembers() {
+<b class="nc">&nbsp;        return teamMembers;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Gets the members of the team by string
+&nbsp;     * @return teamMembers
+&nbsp;     */
+&nbsp;    public List&lt;String&gt; getTeamMembersAsStrings() {
+<b class="nc">&nbsp;        List&lt;String&gt; toReturn = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;        toReturn.add(teamMembers.get(0).getUsername());</b>
+<b class="nc">&nbsp;        toReturn.add(teamMembers.get(1).getUsername());</b>
+<b class="nc">&nbsp;        return toReturn;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Increases the score by a given amount
+&nbsp;     * @param amount (how much to increase score by)
+&nbsp;     */
+&nbsp;    public void incrementScore(int amount) {
+<b class="nc">&nbsp;        score += amount;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Sets whether this team picked up the card during bidding.
+&nbsp;     *
+&nbsp;     * @param toggle true if the team picked up the card, false otherwise
+&nbsp;     */
+&nbsp;    public void setTeamPickedUpCard(boolean toggle) {
+<b class="nc">&nbsp;        teamPickedUpCard = toggle;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Sets whether a member of this team went alone.
+&nbsp;     *
+&nbsp;     * @param toggle true if a member went alone, false otherwise
+&nbsp;     */
+&nbsp;    public void setTeamMemberWhenAlone(boolean toggle) {
+<b class="nc">&nbsp;        teamMemberWhenAlone = toggle;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Returns whether this team picked up the card during bidding.
+&nbsp;     *
+&nbsp;     * @return true if the team picked up the card, false otherwise
+&nbsp;     */
+&nbsp;    public boolean getTeamPickedUpCard() {
+<b class="nc">&nbsp;        return teamPickedUpCard;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Returns whether a member of this team went alone.
+&nbsp;     *
+&nbsp;     * @return true if a member went alone, false otherwise
+&nbsp;     */
+&nbsp;    public boolean getTeamMemberWentAlone() {
+<b class="nc">&nbsp;        return teamMemberWhenAlone;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Returns the number of tricks this team has taken in the current round.
+&nbsp;     *
+&nbsp;     * @return number of tricks taken
+&nbsp;     */
+&nbsp;    public int getTricksTaken() {
+<b class="nc">&nbsp;        return tricksTaken;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Increments the count of tricks taken by the team by 1.
+&nbsp;     */
+&nbsp;
+&nbsp;    public void incrementTricksTaken() {
+<b class="nc">&nbsp;        tricksTaken += 1;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Clears all the tricks taken for the team and the player
+&nbsp;     */
+&nbsp;
+&nbsp;    public void clearTricksTaken() {
+<b class="nc">&nbsp;        tricksTaken = 0;</b>
+<b class="nc">&nbsp;        teamMembers.get(0).clearTricks();</b>
+<b class="nc">&nbsp;        teamMembers.get(1).clearTricks();</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-12-10 15:33</div>
+</div>
+</body>
+</html>

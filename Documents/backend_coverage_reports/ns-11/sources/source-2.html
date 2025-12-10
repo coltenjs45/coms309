@@ -1,0 +1,260 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > Lobby</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">data.Lobby</a>
+</div>
+
+<h1>Coverage Summary for Class: Lobby (data.Lobby)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Lobby</td>
+<td class="coverageStat">
+  <span class="percent">
+    80%
+  </span>
+  <span class="absValue">
+    (8/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    61.5%
+  </span>
+  <span class="absValue">
+    (8/13)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">Lobby$HibernateInstantiator$K7tKiyFQ</td>
+  </tr>
+  <tr>
+    <td class="name">Lobby$HibernateProxy$JwVKzBJl</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    80%
+  </span>
+  <span class="absValue">
+    (8/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    61.5%
+  </span>
+  <span class="absValue">
+    (8/13)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package data.Lobby;
+&nbsp;
+&nbsp;import com.fasterxml.jackson.annotation.JsonManagedReference;
+&nbsp;import data.User.AppUser;
+&nbsp;import jakarta.persistence.*;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;/**
+&nbsp; * Represents a game lobby where users can join and play a specific game type.
+&nbsp; * &lt;p&gt;
+&nbsp; * Each lobby has a unique ID, a game type, a list of users, and a join code
+&nbsp; * that allows other users to enter the lobby.
+&nbsp; */
+&nbsp;@Entity
+<b class="fc">&nbsp;public class Lobby {</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * The unique identifier for the lobby.
+&nbsp;     */
+&nbsp;    @Id
+&nbsp;    @GeneratedValue(strategy = GenerationType.IDENTITY)
+&nbsp;    private long lobbyID;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * The type of game being played in this lobby.
+&nbsp;     */
+&nbsp;    @Enumerated(EnumType.STRING)
+&nbsp;    private GameType gameType;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * The list of users currently in the lobby.
+&nbsp;     */
+&nbsp;    @OneToMany(mappedBy = &quot;lobby&quot;)
+&nbsp;    @JsonManagedReference
+&nbsp;    private List&lt;AppUser&gt; users;
+&nbsp;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * The join code used by players to enter this lobby.
+&nbsp;     */
+&nbsp;    private String joinCode;
+&nbsp;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Gets the unique lobby ID.
+&nbsp;     * @return the lobby ID
+&nbsp;     */
+&nbsp;    public long getLobbyID() {
+<b class="fc">&nbsp;        return lobbyID;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Sets the unique lobby ID.
+&nbsp;     * @param lobbyID the lobby ID to set
+&nbsp;     */
+&nbsp;    public void setLobbyID(long lobbyID) {
+<b class="nc">&nbsp;        this.lobbyID = lobbyID;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Gets the game type for this lobby.
+&nbsp;     * @return the game type
+&nbsp;     */
+&nbsp;    public GameType getGameType() {
+<b class="fc">&nbsp;        return gameType;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Sets the game type for this lobby.
+&nbsp;     * @param gameType the game type to set
+&nbsp;     */
+&nbsp;    public void setGameType(GameType gameType) {
+<b class="fc">&nbsp;        this.gameType = gameType;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Gets the list of users currently in the lobby.
+&nbsp;     * @return the list of users
+&nbsp;     */
+&nbsp;    public List&lt;AppUser&gt; getUsers() {
+<b class="fc">&nbsp;        return users;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Sets the list of users in the lobby.
+&nbsp;     * @param users the list of users to set
+&nbsp;     */
+&nbsp;    public void setUsers(List&lt;AppUser&gt; users) {
+<b class="fc">&nbsp;        this.users = users;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Gets the join code for this lobby.
+&nbsp;     * @return the join code
+&nbsp;     */
+&nbsp;    public String getJoinCode() {
+<b class="fc">&nbsp;        return joinCode;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Sets the join code for this lobby.
+&nbsp;     * @param joinCode the join code to set
+&nbsp;     */
+&nbsp;    public void setJoinCode(String joinCode) {
+<b class="fc">&nbsp;        this.joinCode = joinCode;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Retrieves a user from the lobby by their user ID.
+&nbsp;     * @param userID the ID of the user to retrieve
+&nbsp;     * @return the AppUser with the matching ID, or null if not found
+&nbsp;     */
+&nbsp;    public AppUser getUser(int userID) {
+<b class="nc">&nbsp;        for (AppUser user : users) {</b>
+<b class="nc">&nbsp;            if (user.getUserID() == userID) {</b>
+<b class="nc">&nbsp;                return user;</b>
+&nbsp;            }
+&nbsp;        }
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;    }
+&nbsp;}
+&nbsp;
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-12-10 15:33</div>
+</div>
+</body>
+</html>

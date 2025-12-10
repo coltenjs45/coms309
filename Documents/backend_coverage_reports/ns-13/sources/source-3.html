@@ -1,0 +1,227 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > EuchreStats</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">data.User.Stats</a>
+</div>
+
+<h1>Coverage Summary for Class: EuchreStats (data.User.Stats)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">EuchreStats</td>
+<td class="coverageStat">
+  <span class="percent">
+    66.7%
+  </span>
+  <span class="absValue">
+    (12/18)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (12/24)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">EuchreStats$HibernateInstantiator$3bP1HiPv</td>
+  </tr>
+  <tr>
+    <td class="name">EuchreStats$HibernateProxy$15DgwkYW</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    66.7%
+  </span>
+  <span class="absValue">
+    (12/18)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (12/24)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package data.User.Stats;
+&nbsp;
+&nbsp;import jakarta.persistence.*;
+&nbsp;
+&nbsp;/**
+&nbsp; * Stores gameplay statistics for the Euchre card game.
+&nbsp; * &lt;p&gt;
+&nbsp; * Tracks metrics such as games won, tricks taken, times the player picked up
+&nbsp; * the turned-up card, times they went alone, and sweeps won.
+&nbsp; * This class extends {@link GameStats} to incorporate shared game tracking details.
+&nbsp; * &lt;/p&gt;
+&nbsp; */
+&nbsp;@Entity
+&nbsp;@DiscriminatorValue(&quot;EUCHRE&quot;)
+&nbsp;public class EuchreStats extends GameStats {
+&nbsp;
+&nbsp;    private int gamesWon;
+&nbsp;    private int tricksTaken;
+&nbsp;    private int timesPickedUp;
+&nbsp;    private int timesGoneAlone;
+&nbsp;    private int sweepsWon;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Protected default constructor for JPA use.
+&nbsp;     */
+<b class="fc">&nbsp;    public EuchreStats() { }</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Constructs a EuchreStats object with custom initial values.
+&nbsp;     *
+&nbsp;     * @param gamesWon number of games won
+&nbsp;     * @param tricksTaken number of tricks taken
+&nbsp;     * @param timesPickedUp number of times the player picked up the card
+&nbsp;     * @param timesGoneAlone number of times the player went alone
+&nbsp;     * @param sweepsWon number of sweeps won
+&nbsp;     */
+<b class="nc">&nbsp;    public EuchreStats(int gamesWon, int tricksTaken, int timesPickedUp, int timesGoneAlone, int sweepsWon) {</b>
+<b class="nc">&nbsp;        this.gamesWon = gamesWon;</b>
+<b class="nc">&nbsp;        this.tricksTaken = tricksTaken;</b>
+<b class="nc">&nbsp;        this.timesPickedUp = timesPickedUp;</b>
+<b class="nc">&nbsp;        this.timesGoneAlone = timesGoneAlone;</b>
+<b class="nc">&nbsp;        this.sweepsWon = sweepsWon;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Increment Methods
+&nbsp;
+&nbsp;    /** Increments the number of games won by one. */
+<b class="fc">&nbsp;    public void addGameWon() { gamesWon++; }</b>
+&nbsp;
+&nbsp;    /** Increments the number of tricks taken by one. */
+<b class="fc">&nbsp;    public void addTrickTaken() { tricksTaken++; }</b>
+&nbsp;
+&nbsp;    /** Increments the number of times the player picked up the card by one. */
+<b class="fc">&nbsp;    public void addTimePickedUp() { timesPickedUp++; }</b>
+&nbsp;
+&nbsp;    /** Increments the number of times the player went alone by one. */
+<b class="fc">&nbsp;    public void addTimeGoneAlone() { timesGoneAlone++; }</b>
+&nbsp;
+&nbsp;    /** Increments the number of sweeps won by one. */
+<b class="fc">&nbsp;    public void addSweepWon() { sweepsWon++; }</b>
+&nbsp;
+&nbsp;    // Getters and Setters
+&nbsp;
+&nbsp;    /** @return number of games won */
+<b class="fc">&nbsp;    public int getGamesWon() { return gamesWon; }</b>
+&nbsp;
+&nbsp;    /** @return number of tricks taken */
+<b class="fc">&nbsp;    public int getTricksTaken() { return tricksTaken; }</b>
+&nbsp;
+&nbsp;    /** @return number of times the player picked up the card */
+<b class="fc">&nbsp;    public int getTimesPickedUp() { return timesPickedUp; }</b>
+&nbsp;
+&nbsp;    /** @return number of times the player went alone */
+<b class="fc">&nbsp;    public int getTimesGoneAlone() { return timesGoneAlone; }</b>
+&nbsp;
+&nbsp;    /** @return number of sweeps won */
+<b class="fc">&nbsp;    public int getSweepsWon() { return sweepsWon; }</b>
+&nbsp;
+&nbsp;    // Setters
+&nbsp;
+&nbsp;    /** @param gamesWon number of games won */
+<b class="nc">&nbsp;    public void setGamesWon(int gamesWon) { this.gamesWon = gamesWon; }</b>
+&nbsp;
+&nbsp;    /** @param tricksTaken number of tricks taken */
+<b class="fc">&nbsp;    public void setTricksTaken(int tricksTaken) { this.tricksTaken = tricksTaken; }</b>
+&nbsp;
+&nbsp;    /** @param timesPickedUp number of times the player picked up the card */
+<b class="nc">&nbsp;    public void setTimesPickedUp(int timesPickedUp) { this.timesPickedUp = timesPickedUp; }</b>
+&nbsp;
+&nbsp;    /** @param timesGoneAlone number of times the player went alone */
+<b class="nc">&nbsp;    public void setTimesGoneAlone(int timesGoneAlone) { this.timesGoneAlone = timesGoneAlone; }</b>
+&nbsp;
+&nbsp;    /** @param sweepsWon number of sweeps won */
+<b class="nc">&nbsp;    public void setSweepsWon(int sweepsWon) { this.sweepsWon = sweepsWon; }</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Returns a formatted string summarizing Euchre statistics.
+&nbsp;     *
+&nbsp;     * @return string representation of all recorded statistics
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public String toString() {
+<b class="nc">&nbsp;        return &quot;Games won: &quot; + gamesWon +</b>
+&nbsp;                &quot;, Tricks taken: &quot; + tricksTaken +
+&nbsp;                &quot;, Times picked up: &quot; + timesPickedUp +
+&nbsp;                &quot;, Times gone alone: &quot; + timesGoneAlone +
+&nbsp;                &quot;, Sweeps won: &quot; + sweepsWon +
+<b class="nc">&nbsp;                &quot;, Games Played: &quot; + getGamesPlayed();</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-12-10 15:33</div>
+</div>
+</body>
+</html>

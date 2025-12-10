@@ -1,0 +1,458 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > BlackJackPlayer</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">data.Game.BlackJack</a>
+</div>
+
+<h1>Coverage Summary for Class: BlackJackPlayer (data.Game.BlackJack)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">BlackJackPlayer</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/29)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/32)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/68)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package data.Game.BlackJack;
+&nbsp;
+&nbsp;import data.Game.BlackJack.BlackJackCard;
+&nbsp;import data.User.AppUser;
+&nbsp;import data.User.Stats.BlackjackStats;
+&nbsp;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;/**
+&nbsp; * Represents a player in a Blackjack game. Each player may have one or more hands
+&nbsp; * (in the case of splits), chip balances, bets per hand, and standing state per hand.
+&nbsp; * &lt;p&gt;
+&nbsp; * This class also supports linking to an {@link AppUser} for persistent statistics tracking.
+&nbsp; */
+&nbsp;public class BlackJackPlayer {
+&nbsp;    /** The username of the player. */
+&nbsp;    private String username;
+&nbsp;    /** A list of hands, where each hand is a list of cards. Used for split hands. */
+&nbsp;    private List&lt;List&lt;BlackJackCard&gt;&gt; hands;
+&nbsp;    /** Index pointing to the player&#39;s current active hand. */
+<b class="nc">&nbsp;    private int currentHandIndex = 0;</b>
+&nbsp;    /** Chip count for the player. */
+&nbsp;    private int chips;
+&nbsp;    /** The bet placed on each hand, aligned with {@code hands}. */
+&nbsp;    private List&lt;Integer&gt; betOnCurrentHand;
+&nbsp;    /** Whether each hand has stood, aligned with {@code hands}. */
+&nbsp;    private List&lt;Boolean&gt; hasStoodForHand;
+&nbsp;    /** Whether the player has placed a bet this round. */
+&nbsp;    private boolean hasBet;
+&nbsp;    /** A reference to the owning AppUser for stats updates. Not serialized. */
+&nbsp;    private transient AppUser userRef;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Constructs a Blackjack player using a username and starting chip amount.
+&nbsp;     *
+&nbsp;     * @param username the player&#39;s username
+&nbsp;     * @param chips    the starting chip balance
+&nbsp;     */
+<b class="nc">&nbsp;    public BlackJackPlayer(String username, int chips) {</b>
+<b class="nc">&nbsp;        this.username = username;</b>
+<b class="nc">&nbsp;        this.hands = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;        this.hands.add(new ArrayList&lt;&gt;()); // first hand</b>
+<b class="nc">&nbsp;        this.chips = chips;</b>
+<b class="nc">&nbsp;        this.betOnCurrentHand = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;        this.betOnCurrentHand.add(0); // default bet for first hand</b>
+<b class="nc">&nbsp;        this.hasStoodForHand = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;        this.hasStoodForHand.add(false); // first hand has not stood</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Constructs a Blackjack player using an AppUser reference and chip balance.
+&nbsp;     *
+&nbsp;     * @param appUser the associated user
+&nbsp;     * @param chips   starting chips
+&nbsp;     */
+<b class="nc">&nbsp;    public BlackJackPlayer(AppUser appUser, int chips) {</b>
+<b class="nc">&nbsp;        this.username = appUser.getUsername();</b>
+<b class="nc">&nbsp;        this.hands = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;        this.hands.add(new ArrayList&lt;&gt;()); // first hand</b>
+<b class="nc">&nbsp;        this.chips = chips;</b>
+<b class="nc">&nbsp;        this.betOnCurrentHand = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;        this.betOnCurrentHand.add(0); // default bet for first hand</b>
+<b class="nc">&nbsp;        this.hasStoodForHand = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;        this.hasStoodForHand.add(false); // first hand has not stood</b>
+<b class="nc">&nbsp;        this.userRef = appUser;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Retrieves the Blackjack statistics associated with this player.
+&nbsp;     *
+&nbsp;     * @return BlackjackStats instance or null if unavailable
+&nbsp;     */
+&nbsp;    public BlackjackStats getBlackJackStats() {
+<b class="nc">&nbsp;        if (userRef != null &amp;&amp; userRef.getUserStats() != null) {</b>
+<b class="nc">&nbsp;            return (BlackjackStats) userRef.getUserStats().getGameStats(&quot;Blackjack&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Gets the AppUser object this player corresponds to.
+&nbsp;     *
+&nbsp;     * @return the AppUser reference, or null if not set
+&nbsp;     */
+&nbsp;    public AppUser getUserRef() {
+<b class="nc">&nbsp;        return userRef;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Gets the username of the player.
+&nbsp;     *
+&nbsp;     * @return the username
+&nbsp;     */
+&nbsp;    public String getUsername() {
+<b class="nc">&nbsp;        return username;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Gets the current active hand for the player.
+&nbsp;     *
+&nbsp;     * @return the current hand as a list of cards
+&nbsp;     */
+&nbsp;    public List&lt;BlackJackCard&gt; getHand() {
+<b class="nc">&nbsp;        return hands.get(currentHandIndex);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Gets all hands belonging to the player, including split hands.
+&nbsp;     *
+&nbsp;     * @return list of all hands
+&nbsp;     */
+&nbsp;    public List&lt;List&lt;BlackJackCard&gt;&gt; getHands() {
+<b class="nc">&nbsp;        return hands;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Gets the index of the player&#39;s current hand.
+&nbsp;     *
+&nbsp;     * @return the index of the active hand
+&nbsp;     */
+&nbsp;    public int getCurrentHandIndex() {
+<b class="nc">&nbsp;        return currentHandIndex;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Sets the index of the player&#39;s current active hand.
+&nbsp;     *
+&nbsp;     * @param currentHandIndex the new hand index
+&nbsp;     */
+&nbsp;    public void setCurrentHandIndex(int currentHandIndex) {
+<b class="nc">&nbsp;        this.currentHandIndex = currentHandIndex;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Gets the player&#39;s current chip count.
+&nbsp;     *
+&nbsp;     * @return chip total
+&nbsp;     */
+&nbsp;    public int getChips() {
+<b class="nc">&nbsp;        return chips;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Sets the player&#39;s chip count.
+&nbsp;     *
+&nbsp;     * @param chips new chip value
+&nbsp;     */
+&nbsp;    public void setChips(int chips) {
+<b class="nc">&nbsp;        this.chips = chips;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Adds a card to the player&#39;s hand
+&nbsp;     *
+&nbsp;     * @param card basic MyCard
+&nbsp;     */
+&nbsp;    public void addCard(BlackJackCard card) {
+<b class="nc">&nbsp;        hands.get(currentHandIndex).add(card);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Gets the bet amount placed on the current hand.
+&nbsp;     *
+&nbsp;     * @return bet value
+&nbsp;     */
+&nbsp;    public int getBetOnCurrentHand() {
+<b class="nc">&nbsp;        return betOnCurrentHand.get(currentHandIndex);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Sets the bet amount for the current hand.
+&nbsp;     *
+&nbsp;     * @param bet the bet value to assign
+&nbsp;     */
+&nbsp;    public void setBetOnCurrentHand(int bet) {
+<b class="nc">&nbsp;        betOnCurrentHand.set(currentHandIndex, bet);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Adds a new hand to the player (used when splitting).
+&nbsp;     *
+&nbsp;     * @param hand the new hand of cards
+&nbsp;     * @param bet  the bet associated with the new hand
+&nbsp;     */
+&nbsp;    public void addHand(List&lt;BlackJackCard&gt; hand, int bet) {
+<b class="nc">&nbsp;        hands.add(hand);</b>
+<b class="nc">&nbsp;        betOnCurrentHand.add(bet);</b>
+<b class="nc">&nbsp;        hasStoodForHand.add(false);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Gets all bets for every hand.
+&nbsp;     *
+&nbsp;     * @return list of bets
+&nbsp;     */
+&nbsp;    public List&lt;Integer&gt; getBets() {
+<b class="nc">&nbsp;        return betOnCurrentHand;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Checks whether the current hand has stood.
+&nbsp;     *
+&nbsp;     * @return true if the current hand has stood
+&nbsp;     */
+&nbsp;    public boolean getHasStoodForHand() {
+<b class="nc">&nbsp;        return hasStoodForHand.get(currentHandIndex);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Sets whether the current hand has stood.
+&nbsp;     *
+&nbsp;     * @param hasStood true if the player stands on this hand
+&nbsp;     */
+&nbsp;    public void setHasStood(Boolean hasStood) {
+<b class="nc">&nbsp;        hasStoodForHand.set(currentHandIndex, hasStood);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Gets whether the player has placed a bet this round.
+&nbsp;     *
+&nbsp;     * @return true if the player has bet
+&nbsp;     */
+&nbsp;    public boolean getHasBet() {
+<b class="nc">&nbsp;        return hasBet;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Sets whether the player has placed a bet this round.
+&nbsp;     *
+&nbsp;     * @param hasBet the bet state
+&nbsp;     */
+&nbsp;    public void setHasBet(boolean hasBet) {
+<b class="nc">&nbsp;        this.hasBet = hasBet;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Calculates the value of the current hand.
+&nbsp;     *
+&nbsp;     * @return the hand value
+&nbsp;     */
+&nbsp;    public int getHandValue() {
+<b class="nc">&nbsp;        return calculateHandValue(getHand());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Calculates the value of a specific hand.
+&nbsp;     *
+&nbsp;     * @param hand list of Blackjack cards
+&nbsp;     * @return total hand value following Blackjack rules
+&nbsp;     */
+&nbsp;    public int getHandValue(List&lt;BlackJackCard&gt; hand) {
+<b class="nc">&nbsp;        return calculateHandValue(hand);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Calculates the total Blackjack value of the player&#39;s hand.
+&nbsp;     * Handles Aces as 1 or 11 optimally.
+&nbsp;     *
+&nbsp;     * @return total hand value
+&nbsp;     */
+&nbsp;    public int calculateHandValue(List&lt;BlackJackCard&gt; hand) {
+<b class="nc">&nbsp;        int value = 0;</b>
+<b class="nc">&nbsp;        int aceCount = 0;</b>
+&nbsp;
+<b class="nc">&nbsp;        for (BlackJackCard card : hand) {</b>
+<b class="nc">&nbsp;            int rank = card.getValue(); // assuming MyCard stores numeric ranks (2–14 where 11=J, 12=Q, 13=K, 14=A)</b>
+<b class="nc">&nbsp;            if (rank &gt;= 11 &amp;&amp; rank &lt;= 13) {</b>
+<b class="nc">&nbsp;                value += 10; // J, Q, K</b>
+<b class="nc">&nbsp;            } else if (rank == 14) {</b>
+<b class="nc">&nbsp;                value += 11; // Ace as 11 for now</b>
+<b class="nc">&nbsp;                aceCount++;</b>
+&nbsp;            } else {
+<b class="nc">&nbsp;                value += rank;</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        while (value &gt; 21 &amp;&amp; aceCount &gt; 0) {</b>
+<b class="nc">&nbsp;            value -= 10; // count one Ace as 1 instead of 11</b>
+<b class="nc">&nbsp;            aceCount--;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return value;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Determines whether the player can split their current hand.
+&nbsp;     *
+&nbsp;     * @return true if the hand contains two equal-value cards and the player has enough chips
+&nbsp;     */
+&nbsp;    public boolean canSplit() {
+<b class="nc">&nbsp;        List&lt;BlackJackCard&gt; hand = getHand();</b>
+<b class="nc">&nbsp;        return (hand.size() == 2 &amp;&amp; ((hand.get(0).getValue()) == (hand.get(1).getValue())) &amp;&amp; (chips &gt;= (betOnCurrentHand.get(currentHandIndex))));</b>
+&nbsp;        // now checks for chip balance and if cards are same value
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Checks whether the player has enough chips to double down.
+&nbsp;     *
+&nbsp;     * @return true if doubling is affordable
+&nbsp;     */
+&nbsp;    public boolean canDouble(){
+<b class="nc">&nbsp;        return chips &gt;= (betOnCurrentHand.get(currentHandIndex)*2);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Advances the player to the next hand (used after completing actions on a split hand).
+&nbsp;     */
+&nbsp;    public void moveToNextHand() {
+<b class="nc">&nbsp;        if (currentHandIndex + 1 &lt; hands.size()) {</b>
+<b class="nc">&nbsp;            currentHandIndex++;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Checks whether the current hand is the final hand the player has.
+&nbsp;     *
+&nbsp;     * @return true if on the last hand
+&nbsp;     */
+&nbsp;    public boolean isOnLastHand() {
+<b class="nc">&nbsp;        return currentHandIndex &gt;= hands.size() - 1;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void resetAllBets() {
+<b class="nc">&nbsp;        for (int i = 0; i &lt; betOnCurrentHand.size(); i++) {</b>
+<b class="nc">&nbsp;            betOnCurrentHand.set(i, 0);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Resets all bets to zero across every hand.
+&nbsp;     */
+&nbsp;    public void resetAllHasStood() {
+<b class="nc">&nbsp;        for (int i = 0; i &lt; hasStoodForHand.size(); i++) {</b>
+<b class="nc">&nbsp;            hasStoodForHand.set(i, false);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-12-10 15:33</div>
+</div>
+</body>
+</html>

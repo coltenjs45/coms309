@@ -1,0 +1,353 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > BlackJackWebSocket</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">data.Game.BlackJack</a>
+</div>
+
+<h1>Coverage Summary for Class: BlackJackWebSocket (data.Game.BlackJack)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">BlackJackWebSocket</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    46.2%
+  </span>
+  <span class="absValue">
+    (6/13)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/25)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    17%
+  </span>
+  <span class="absValue">
+    (9/53)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package data.Game.BlackJack;
+&nbsp;
+&nbsp;import com.fasterxml.jackson.databind.ObjectMapper;
+&nbsp;import data.Game.BlackJack.history.BlackJackMatchHistoryEntity;
+&nbsp;import data.Game.BlackJack.history.BlackJackMatchHistoryRepository;
+&nbsp;import data.Lobby.LobbyRepository;
+&nbsp;import data.User.AppUserRepository;
+&nbsp;import data.User.Stats.UserStatsRepository;
+&nbsp;import jakarta.websocket.*;
+&nbsp;import jakarta.websocket.server.PathParam;
+&nbsp;import jakarta.websocket.server.ServerEndpoint;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.context.ApplicationContext;
+&nbsp;import org.springframework.stereotype.Component;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;import java.util.Collections;
+&nbsp;import java.util.Map;
+&nbsp;import java.util.Set;
+&nbsp;import java.util.concurrent.ConcurrentHashMap;
+&nbsp;
+&nbsp;/**
+&nbsp; * WebSocket endpoint for real-time multiplayer Blackjack.
+&nbsp; * &lt;p&gt;
+&nbsp; * Each lobby (identified by a lobbyCode) maintains:
+&nbsp; * &lt;ul&gt;
+&nbsp; *     &lt;li&gt;A {@link BlackJackGame} instance&lt;/li&gt;
+&nbsp; *     &lt;li&gt;A set of WebSocket sessions connected to that lobby&lt;/li&gt;
+&nbsp; *     &lt;li&gt;A mapping of WebSocket sessions to player usernames&lt;/li&gt;
+&nbsp; * &lt;/ul&gt;
+&nbsp; *
+&nbsp; * This class is responsible for:
+&nbsp; * &lt;ul&gt;
+&nbsp; *     &lt;li&gt;Creating game instances when players join a lobby&lt;/li&gt;
+&nbsp; *     &lt;li&gt;Routing player messages (BET/HIT/STAND/DOUBLE/SPLIT/etc.) to the game engine&lt;/li&gt;
+&nbsp; *     &lt;li&gt;Broadcasting game updates to all connected players in the same lobby&lt;/li&gt;
+&nbsp; * &lt;/ul&gt;
+&nbsp; */
+&nbsp;@Component
+&nbsp;@ServerEndpoint(&quot;/ws/blackjack/{lobbyCode}&quot;)
+<b class="fc">&nbsp;public class BlackJackWebSocket {</b>
+&nbsp;
+&nbsp;    /** Map of lobbyCode → Blackjack game instance. */
+<b class="fc">&nbsp;    private static final Map&lt;String, BlackJackGame&gt; games = new ConcurrentHashMap&lt;&gt;();</b>
+&nbsp;
+&nbsp;    /** Map of lobbyCode → connected WebSocket sessions for that lobby. */
+<b class="fc">&nbsp;    private static final Map&lt;String, Set&lt;Session&gt;&gt; lobbySessions = new ConcurrentHashMap&lt;&gt;();</b>
+&nbsp;
+&nbsp;    /** Map of WebSocket session → username of the player using that session. */
+<b class="fc">&nbsp;    private static final Map&lt;Session, String&gt; sessionPlayers = new ConcurrentHashMap&lt;&gt;();</b>
+&nbsp;
+&nbsp;    /** JSON serializer for WebSocket messages. */
+<b class="fc">&nbsp;    private final ObjectMapper mapper = new ObjectMapper();</b>
+&nbsp;
+&nbsp;    // Spring-managed repositories (set via @Autowired setter methods)
+&nbsp;    private static LobbyRepository lobbyRepository;
+&nbsp;    private static AppUserRepository appUserRepository;
+&nbsp;    private static UserStatsRepository userStatsRepository;
+&nbsp;    private static BlackJackMatchHistoryRepository BlackJackMatchHistoryRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    public void setLobbyRepository(LobbyRepository repo) {
+<b class="fc">&nbsp;        BlackJackWebSocket.lobbyRepository = repo;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    public void setAppUserRepository(AppUserRepository repo) {
+<b class="fc">&nbsp;        BlackJackWebSocket.appUserRepository = repo;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    public void setUserStatsRepository(UserStatsRepository repo) {
+<b class="fc">&nbsp;        BlackJackWebSocket.userStatsRepository = repo;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Autowired
+<b class="fc">&nbsp;    public void setBlackJackMatchHistory(BlackJackMatchHistoryRepository repo) {BlackJackWebSocket.BlackJackMatchHistoryRepository = repo;}</b>
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private ApplicationContext applicationContext;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Triggered when a new WebSocket connection is opened.
+&nbsp;     * Responsible for:
+&nbsp;     * &lt;ul&gt;
+&nbsp;     *     &lt;li&gt;Creating a Blackjack game for the lobby if it does not exist&lt;/li&gt;
+&nbsp;     *     &lt;li&gt;Adding the session to the lobby&#39;s session set&lt;/li&gt;
+&nbsp;     * &lt;/ul&gt;
+&nbsp;     *
+&nbsp;     * @param session    the WebSocket session opened
+&nbsp;     * @param lobbyCode  the lobby code extracted from the WebSocket URL
+&nbsp;     */
+&nbsp;    @OnOpen
+&nbsp;    public void onOpen(Session session, @PathParam(&quot;lobbyCode&quot;) String lobbyCode) {
+<b class="nc">&nbsp;        System.out.println(&quot;New connection: &quot; + session.getId() + &quot; in lobby &quot; + lobbyCode);</b>
+&nbsp;
+&nbsp;        // Create or retrieve a BlackJackGame for this lobby
+&nbsp;
+<b class="nc">&nbsp;        games.computeIfAbsent(lobbyCode, code -&gt; {</b>
+<b class="nc">&nbsp;            BlackJackGame game = new BlackJackGame(code);</b>
+<b class="nc">&nbsp;            game.setLobbyRepository(lobbyRepository);</b>
+<b class="nc">&nbsp;            game.setAppUserRepository(appUserRepository);</b>
+<b class="nc">&nbsp;            game.setUserStatsRepository(userStatsRepository);</b>
+<b class="nc">&nbsp;            game.setBlackJackMatchHistoryRepository(BlackJackMatchHistoryRepository);</b>
+<b class="nc">&nbsp;            game.setBroadcastFunction(json -&gt; broadcastToLobby(json, code));</b>
+<b class="nc">&nbsp;            return game;</b>
+&nbsp;        });
+&nbsp;        // Add this session to the lobby
+<b class="nc">&nbsp;        lobbySessions.computeIfAbsent(lobbyCode, k -&gt; ConcurrentHashMap.newKeySet()).add(session);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Handles incoming WebSocket messages from players.
+&nbsp;     * Expected JSON format:
+&nbsp;     * &lt;pre&gt;
+&nbsp;     * {
+&nbsp;     *   &quot;action&quot;: &quot;HIT&quot; | &quot;BET&quot; | &quot;STAND&quot; | &quot;DOUBLE&quot; | ...,
+&nbsp;     *   &quot;player&quot;: &quot;username&quot;,
+&nbsp;     *   &quot;value&quot;: optional integer (for bets)
+&nbsp;     * }
+&nbsp;     * &lt;/pre&gt;
+&nbsp;     *
+&nbsp;     * Routes actions to {@link BlackJackGame}.
+&nbsp;     *
+&nbsp;     * @param session    the session sending the message
+&nbsp;     * @param message    raw JSON message
+&nbsp;     * @param lobbyCode  the lobby this session belongs to
+&nbsp;     * @throws IOException if JSON parsing fails
+&nbsp;     */
+&nbsp;    @OnMessage
+&nbsp;    public void onMessage(Session session, String message, @PathParam(&quot;lobbyCode&quot;) String lobbyCode) throws IOException {
+<b class="nc">&nbsp;        BlackJackGame game = games.get(lobbyCode);</b>
+<b class="nc">&nbsp;        if (game == null) return;</b>
+&nbsp;
+&nbsp;        // Parse JSON message
+<b class="nc">&nbsp;        var json = mapper.readTree(message);</b>
+<b class="nc">&nbsp;        String action = json.get(&quot;action&quot;).asText();</b>
+<b class="nc">&nbsp;        String player = json.get(&quot;player&quot;).asText();</b>
+<b class="nc">&nbsp;        int value = json.has(&quot;value&quot;) ? json.get(&quot;value&quot;).asInt() : 0;</b>
+&nbsp;
+&nbsp;        // Associate session with player
+<b class="nc">&nbsp;        sessionPlayers.put(session, player);</b>
+&nbsp;
+<b class="nc">&nbsp;        switch (action.toUpperCase()) {</b>
+&nbsp;            case &quot;JOIN&quot;:
+&nbsp;                // Optionally, handle JOIN logic here
+&nbsp;                break;
+&nbsp;            case &quot;START&quot;:
+<b class="nc">&nbsp;                game.initializeGameFromLobby(lobbyCode);</b>
+&nbsp;                break;
+&nbsp;            case &quot;BET&quot;:
+<b class="nc">&nbsp;                game.handlePlayerBet(player, value);</b>
+&nbsp;                break;
+&nbsp;            case &quot;HIT&quot;:
+&nbsp;            case &quot;STAND&quot;:
+&nbsp;            case &quot;DOUBLE&quot;:
+&nbsp;            case &quot;SPLIT&quot;:
+&nbsp;            case &quot;LEAVE&quot;:
+<b class="nc">&nbsp;                game.handlePlayerDecision(player, action);</b>
+&nbsp;                break;
+&nbsp;            case &quot;STARTROUND&quot;:
+<b class="nc">&nbsp;                game.startRound();</b>
+&nbsp;                break;
+&nbsp;            default:
+<b class="nc">&nbsp;                game.handlePlayerDecision(player, action);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // Broadcast updated game state to only this lobby
+<b class="nc">&nbsp;        broadcastGameState(game, lobbyCode);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Triggered when a client&#39;s WebSocket connection closes.
+&nbsp;     * Cleans up session tracking and removes empty lobby entries.
+&nbsp;     *
+&nbsp;     * @param session    the session that was closed
+&nbsp;     * @param lobbyCode  the lobby the session belonged to
+&nbsp;     */
+&nbsp;    @OnClose
+&nbsp;    public void onClose(Session session, @PathParam(&quot;lobbyCode&quot;) String lobbyCode) {
+<b class="nc">&nbsp;        System.out.println(&quot;Connection closed: &quot; + session.getId());</b>
+<b class="nc">&nbsp;        sessionPlayers.remove(session);</b>
+&nbsp;
+<b class="nc">&nbsp;        Set&lt;Session&gt; sessions = lobbySessions.get(lobbyCode);</b>
+<b class="nc">&nbsp;        if (sessions != null) {</b>
+<b class="nc">&nbsp;            sessions.remove(session);</b>
+<b class="nc">&nbsp;            if (sessions.isEmpty()) {</b>
+<b class="nc">&nbsp;                lobbySessions.remove(lobbyCode);</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Called when an exception occurs within WebSocket processing.
+&nbsp;     *
+&nbsp;     * @param session   the session that encountered the error
+&nbsp;     * @param throwable the exception thrown
+&nbsp;     */
+&nbsp;    @OnError
+&nbsp;    public void onError(Session session, Throwable throwable) {
+<b class="nc">&nbsp;        throwable.printStackTrace();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void broadcastToLobby(String json, String lobbyCode) {
+<b class="nc">&nbsp;        Set&lt;Session&gt; sessions = lobbySessions.getOrDefault(lobbyCode, Collections.emptySet());</b>
+<b class="nc">&nbsp;        for (Session session : sessions) {</b>
+<b class="nc">&nbsp;            if (session.isOpen()) {</b>
+&nbsp;                try {
+<b class="nc">&nbsp;                    session.getBasicRemote().sendText(json);</b>
+&nbsp;                } catch (IOException e) {
+<b class="nc">&nbsp;                    e.printStackTrace();</b>
+&nbsp;                }
+&nbsp;            }
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    private void broadcastGameState(BlackJackGame game, String lobbyCode) {
+&nbsp;        String json;
+&nbsp;        try {
+<b class="nc">&nbsp;            json = mapper.writeValueAsString(game.toDTO());</b>
+&nbsp;        } catch (Exception e) {
+<b class="nc">&nbsp;            e.printStackTrace();</b>
+&nbsp;            return;
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        Set&lt;Session&gt; sessions = lobbySessions.getOrDefault(lobbyCode, Collections.emptySet());</b>
+<b class="nc">&nbsp;        for (Session session : sessions) {</b>
+<b class="nc">&nbsp;            if (session.isOpen()) {</b>
+&nbsp;                try {
+<b class="nc">&nbsp;                    session.getBasicRemote().sendText(json);</b>
+&nbsp;                } catch (IOException e) {
+<b class="nc">&nbsp;                    e.printStackTrace();</b>
+&nbsp;                }
+&nbsp;            }
+&nbsp;        }
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-12-10 15:33</div>
+</div>
+</body>
+</html>

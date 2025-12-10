@@ -1,0 +1,311 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > Crazy8Stats</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">data.User.Stats</a>
+</div>
+
+<h1>Coverage Summary for Class: Crazy8Stats (data.User.Stats)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Crazy8Stats</td>
+<td class="coverageStat">
+  <span class="percent">
+    33.3%
+  </span>
+  <span class="absValue">
+    (9/27)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    25.7%
+  </span>
+  <span class="absValue">
+    (9/35)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">Crazy8Stats$HibernateInstantiator$hScJlHMF</td>
+  </tr>
+  <tr>
+    <td class="name">Crazy8Stats$HibernateProxy$ua0zohLO</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    33.3%
+  </span>
+  <span class="absValue">
+    (9/27)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    25.7%
+  </span>
+  <span class="absValue">
+    (9/35)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package data.User.Stats;
+&nbsp;import jakarta.persistence.*;
+&nbsp;
+&nbsp;/**
+&nbsp; * Represents gameplay statistics for the Crazy 8&#39;s card game.
+&nbsp; * &lt;p&gt;
+&nbsp; * Tracks counts for actions such as drawing cards, placing cards,
+&nbsp; * playing special cards (+2, +4, Reverse, Skip, Crazy 8), and the number
+&nbsp; * of games won. Extends {@link GameStats} to inherit shared game statistics.
+&nbsp; * &lt;/p&gt;
+&nbsp; */
+&nbsp;@Entity
+&nbsp;@DiscriminatorValue(&quot;CRAZY8&quot;)
+&nbsp;public class Crazy8Stats extends GameStats{
+&nbsp;    private int timesDrewCard;
+&nbsp;    private int cardsPlaced;
+&nbsp;    private int crazy8Played;
+&nbsp;    private int skipsPlayed;
+&nbsp;    private int reversePlayed;
+&nbsp;    private int plus2Played;
+&nbsp;    private int plus4Played;
+&nbsp;    private int gamesWon;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Default constructor for JPA and general initialization.
+&nbsp;     */
+<b class="fc">&nbsp;    public Crazy8Stats() {}</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Constructs a Crazy8Stats object with custom initial values.
+&nbsp;     *
+&nbsp;     * @param timesDrewCard number of times a card was drawn
+&nbsp;     * @param cardsPlaced number of cards placed
+&nbsp;     * @param crazy8Played number of Crazy 8 cards played
+&nbsp;     * @param skipsPlayed number of Skip cards played
+&nbsp;     * @param reversePlayed number of Reverse cards played
+&nbsp;     * @param plus2Played number of +2 cards played
+&nbsp;     * @param plus4Played number of +4 cards played
+&nbsp;     * @param gamesWon number of games won
+&nbsp;     */
+&nbsp;    public Crazy8Stats(int timesDrewCard, int cardsPlaced, int crazy8Played, int skipsPlayed,
+<b class="nc">&nbsp;                       int reversePlayed, int plus2Played, int plus4Played, int gamesWon) {</b>
+<b class="nc">&nbsp;        this.timesDrewCard = timesDrewCard;</b>
+<b class="nc">&nbsp;        this.cardsPlaced = cardsPlaced;</b>
+<b class="nc">&nbsp;        this.crazy8Played = crazy8Played;</b>
+<b class="nc">&nbsp;        this.skipsPlayed = skipsPlayed;</b>
+<b class="nc">&nbsp;        this.reversePlayed = reversePlayed;</b>
+<b class="nc">&nbsp;        this.plus2Played = plus2Played;</b>
+<b class="nc">&nbsp;        this.plus4Played = plus4Played;</b>
+<b class="nc">&nbsp;        this.gamesWon = gamesWon;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Increment Methods
+&nbsp;    /** Increments the count of cards drawn by one. */
+&nbsp;    public void addCardDrawn() {
+<b class="nc">&nbsp;        timesDrewCard++;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /** Increments the count of cards placed by one. */
+&nbsp;    public void addCardPlaced() {
+<b class="nc">&nbsp;        cardsPlaced++;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /** Increments the count of Crazy 8 cards played by one. */
+&nbsp;    public void addCrazy8Played() {
+<b class="nc">&nbsp;        crazy8Played++;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /** Increments the count of Skip cards played by one. */
+&nbsp;    public void addSkipPlayed() {
+<b class="nc">&nbsp;        skipsPlayed++;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /** Increments the count of Reverse cards played by one. */
+&nbsp;    public void addReversePlayed() {
+<b class="nc">&nbsp;        reversePlayed++;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /** Increments the count of +2 cards played by one. */
+&nbsp;    public void addPlus2Played() {
+<b class="nc">&nbsp;        plus2Played++;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /** Increments the count of +4 cards played by one. */
+&nbsp;    public void addPlus4Played() {
+<b class="nc">&nbsp;        plus4Played++;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /** Increments the number of games won by one. */
+&nbsp;    public void addGameWon() {
+<b class="nc">&nbsp;        gamesWon++;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Getters
+&nbsp;
+&nbsp;    /** @return number of times a card was drawn */
+&nbsp;    public int getTimesDrewCard() {
+<b class="fc">&nbsp;        return timesDrewCard;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /** @return number of cards placed */
+&nbsp;    public int getCardsPlaced() {
+<b class="fc">&nbsp;        return cardsPlaced;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /** @return number of Crazy 8 cards played */
+&nbsp;    public int getCrazy8Played() {
+<b class="fc">&nbsp;        return crazy8Played;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /** @return number of Skip cards played */
+&nbsp;    public int getSkipsPlayed() {
+<b class="fc">&nbsp;        return skipsPlayed;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /** @return number of Reverse cards played */
+&nbsp;    public int getReversePlayed() {
+<b class="fc">&nbsp;        return reversePlayed;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /** @return number of +2 cards played */
+&nbsp;    public int getPlus2Played() {
+<b class="fc">&nbsp;        return plus2Played;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /** @return number of +4 cards played */
+&nbsp;    public int getPlus4Played() {
+<b class="fc">&nbsp;        return plus4Played;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /** @return number of games won */
+&nbsp;    public int getGamesWon() {
+<b class="fc">&nbsp;        return gamesWon;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Setters
+&nbsp;
+&nbsp;    /** @param timesDrewCard number of times a card was drawn */
+&nbsp;    public void setTimesDrewCard(int timesDrewCard) {
+<b class="nc">&nbsp;        this.timesDrewCard = timesDrewCard;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /** @param cardsPlaced number of cards placed */
+&nbsp;    public void setCardsPlaced(int cardsPlaced) {
+<b class="nc">&nbsp;        this.cardsPlaced = cardsPlaced;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /** @param crazy8Played number of Crazy 8 cards played */
+&nbsp;    public void setCrazy8Played(int crazy8Played) {
+<b class="nc">&nbsp;        this.crazy8Played = crazy8Played;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /** @param skipsPlayed number of Skip cards played */
+&nbsp;    public void setSkipsPlayed(int skipsPlayed) {
+<b class="nc">&nbsp;        this.skipsPlayed = skipsPlayed;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /** @param reversePlayed number of Reverse cards played */
+&nbsp;    public void setReversePlayed(int reversePlayed) {
+<b class="nc">&nbsp;        this.reversePlayed = reversePlayed;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /** @param plus2Played number of +2 cards played */
+&nbsp;    public void setPlus2Played(int plus2Played) {
+<b class="nc">&nbsp;        this.plus2Played = plus2Played;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /** @param plus4Played number of +4 cards played */
+&nbsp;    public void setPlus4Played(int plus4Played) {
+<b class="nc">&nbsp;        this.plus4Played = plus4Played;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /** @param gamesWon number of games won */
+&nbsp;    public void setGamesWon(int gamesWon) {
+<b class="nc">&nbsp;        this.gamesWon = gamesWon;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Returns a formatted string summarizing Crazy 8 statistics.
+&nbsp;     *
+&nbsp;     * @return string representation of all recorded statistics
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public String toString() {
+<b class="nc">&nbsp;        return &quot;Cards Drawn: &quot; + timesDrewCard +</b>
+&nbsp;                &quot;, Cards Placed: &quot; + cardsPlaced +
+&nbsp;                &quot;, Crazy 8s Played: &quot; + crazy8Played +
+&nbsp;                &quot;, Skips Played: &quot; + skipsPlayed +
+&nbsp;                &quot;, Reverses Played: &quot; + reversePlayed +
+&nbsp;                &quot;, +2 Played: &quot; + plus2Played +
+&nbsp;                &quot;, +4 Played: &quot; + plus4Played +
+&nbsp;                &quot;, Games Won: &quot; + gamesWon;
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-12-10 15:33</div>
+</div>
+</body>
+</html>

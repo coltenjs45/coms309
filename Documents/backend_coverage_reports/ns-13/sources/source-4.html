@@ -1,0 +1,205 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > GameStats</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">data.User.Stats</a>
+</div>
+
+<h1>Coverage Summary for Class: GameStats (data.User.Stats)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">GameStats</td>
+<td class="coverageStat">
+  <span class="percent">
+    75%
+  </span>
+  <span class="absValue">
+    (6/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    75%
+  </span>
+  <span class="absValue">
+    (6/8)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">GameStats$HibernateProxy$ieYlcBXK</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    75%
+  </span>
+  <span class="absValue">
+    (6/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    75%
+  </span>
+  <span class="absValue">
+    (6/8)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package data.User.Stats;
+&nbsp;
+&nbsp;import com.fasterxml.jackson.annotation.JsonIgnore;
+&nbsp;import jakarta.persistence.*;
+&nbsp;
+&nbsp;/**
+&nbsp; * Base class for tracking gameplay statistics across all supported games.
+&nbsp; * &lt;p&gt;
+&nbsp; * This abstract class serves as the parent for game-specific statistics entities
+&nbsp; * such as Blackjack, Crazy 8s, and Euchre. It uses a single-table inheritance
+&nbsp; * strategy, where all game stat types are stored within one database table and
+&nbsp; * differentiated by a discriminator column.
+&nbsp; * &lt;/p&gt;
+&nbsp; */
+&nbsp;@Entity
+&nbsp;@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+&nbsp;@DiscriminatorColumn(name = &quot;game_type&quot;, discriminatorType = DiscriminatorType.STRING)
+<b class="fc">&nbsp;public abstract class GameStats {</b>
+&nbsp;
+&nbsp;    @Id
+&nbsp;    @GeneratedValue(strategy = GenerationType.IDENTITY)
+&nbsp;    private long id;
+&nbsp;
+&nbsp;    private int gamesPlayed;
+&nbsp;
+&nbsp;    @ManyToOne(fetch = FetchType.LAZY)
+&nbsp;    @JoinColumn(name = &quot;user_stats_id&quot;, nullable = false)
+&nbsp;    @JsonIgnore
+&nbsp;    private UserStats userStats;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Increments the number of games played by one.
+&nbsp;     */
+&nbsp;    public void addGamePlayed() {
+<b class="fc">&nbsp;        gamesPlayed++;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Sets the total number of games played.
+&nbsp;     *
+&nbsp;     * @param gamesPlayed number of games played
+&nbsp;     */
+&nbsp;    public void setGamesPlayed(int gamesPlayed) {
+<b class="fc">&nbsp;        this.gamesPlayed = gamesPlayed;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Returns the total number of games played.
+&nbsp;     *
+&nbsp;     * @return games played
+&nbsp;     */
+&nbsp;    public int getGamesPlayed() {
+<b class="fc">&nbsp;        return gamesPlayed;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Returns the unique identifier of this stats record.
+&nbsp;     *
+&nbsp;     * @return ID of the stats entry
+&nbsp;     */
+&nbsp;    public long getId() {
+<b class="fc">&nbsp;        return id;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Sets the unique identifier of this stats record.
+&nbsp;     *
+&nbsp;     * @param id the ID to assign
+&nbsp;     */
+&nbsp;    public void setId(long id) {
+<b class="nc">&nbsp;        this.id = id;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Returns the associated {@link UserStats} object.
+&nbsp;     *
+&nbsp;     * @return the user&#39;s overall statistics container
+&nbsp;     */
+&nbsp;    public UserStats getUserStats() {
+<b class="nc">&nbsp;        return userStats;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Sets the {@link UserStats} object that owns this stats entry.
+&nbsp;     *
+&nbsp;     * @param userStats the parent stats object
+&nbsp;     */
+&nbsp;    public void setUserStats(UserStats userStats) {
+<b class="fc">&nbsp;        this.userStats = userStats;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-12-10 15:33</div>
+</div>
+</body>
+</html>

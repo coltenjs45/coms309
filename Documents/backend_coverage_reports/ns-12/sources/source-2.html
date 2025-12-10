@@ -1,0 +1,348 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > AppUserController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">data.User</a>
+</div>
+
+<h1>Coverage Summary for Class: AppUserController (data.User)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">AppUserController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    77.8%
+  </span>
+  <span class="absValue">
+    (7/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (18/36)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    74.1%
+  </span>
+  <span class="absValue">
+    (40/54)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package data.User;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Objects;
+&nbsp;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.dao.DataIntegrityViolationException;
+&nbsp;import org.springframework.web.bind.annotation.DeleteMapping;
+&nbsp;import org.springframework.web.bind.annotation.GetMapping;
+&nbsp;import org.springframework.web.bind.annotation.PathVariable;
+&nbsp;import org.springframework.web.bind.annotation.PostMapping;
+&nbsp;import org.springframework.web.bind.annotation.PutMapping;
+&nbsp;import org.springframework.web.bind.annotation.RequestBody;
+&nbsp;import org.springframework.web.bind.annotation.RestController;
+&nbsp;import org.springframework.http.HttpStatus;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;
+&nbsp;/**
+&nbsp; * REST controller for managing {@link AppUser} entities.
+&nbsp; * &lt;p&gt;
+&nbsp; * This controller provides CRUD operations for users, including
+&nbsp; * creation, retrieval, updates by ID or username, and deletion.
+&nbsp; * All endpoints return JSON and rely on {@link AppUserRepository}
+&nbsp; * for database interaction.
+&nbsp; */
+&nbsp;@RestController
+<b class="fc">&nbsp;public class AppUserController {</b>
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    AppUserRepository AppUserRepository;
+<b class="fc">&nbsp;    private String success = &quot;{\&quot;message\&quot;:\&quot;success\&quot;}&quot;;</b>
+<b class="fc">&nbsp;    private String failure = &quot;{\&quot;message\&quot;:\&quot;failure\&quot;}&quot;;</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * GET /AppUser
+&nbsp;     * Retrieves a list of all AppUser records from the database.
+&nbsp;     *
+&nbsp;     * @return List of AppUser objects
+&nbsp;     */
+&nbsp;    @GetMapping(path = {&quot;/AppUser&quot;})
+&nbsp;    List&lt;AppUser&gt; getAllAppUsers() {
+<b class="nc">&nbsp;        return this.AppUserRepository.findAll();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * GET /AppUser/{id}
+&nbsp;     * Retrieves a single AppUser by their ID.
+&nbsp;     *
+&nbsp;     * @param id the ID of the user
+&nbsp;     * @return the AppUser object, or null if not found
+&nbsp;     */
+&nbsp;    @GetMapping(path = {&quot;/AppUser/{id}&quot;})
+&nbsp;    AppUser getAppUserById(@PathVariable long id) {
+<b class="nc">&nbsp;        return this.AppUserRepository.findById(id);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Creates a new AppUser in the system.
+&nbsp;     * @param appUser the AppUser object to create, provided in the request body
+&nbsp;     * @return a ResponseEntity containing a message and HTTP status code:
+&nbsp;     *         &lt;ul&gt;
+&nbsp;     *             &lt;li&gt;200 OK: user was successfully created&lt;/li&gt;
+&nbsp;     *             &lt;li&gt;400 Bad Request: request body was null&lt;/li&gt;
+&nbsp;     *             &lt;li&gt;409 Conflict: username already exists (unique constraint violation)&lt;/li&gt;
+&nbsp;     *         &lt;/ul&gt;
+&nbsp;     *
+&nbsp;     * @see AppUserRepository#save(Object)
+&nbsp;     *
+&nbsp;     * Example usage:
+&nbsp;     * POST /AppUser
+&nbsp;     * Request body (JSON):
+&nbsp;     * {
+&nbsp;     *   &quot;username&quot;: &quot;johndoe123&quot;,
+&nbsp;     *   &quot;password&quot;: &quot;SecurePass123!&quot;,
+&nbsp;     *   &quot;email&quot;: &quot;johndoe@example.com&quot;,
+&nbsp;     *   &quot;firstName&quot;: &quot;John&quot;,
+&nbsp;     *   &quot;lastName&quot;: &quot;Doe&quot;,
+&nbsp;     *   &quot;age&quot;: 30
+&nbsp;     * }
+&nbsp;     */
+&nbsp;    @PostMapping(path = {&quot;/AppUser&quot;})
+&nbsp;    public ResponseEntity&lt;String&gt; createAppUser(@RequestBody AppUser appUser) {
+<b class="pc">&nbsp;        if (appUser == null) {</b>
+<b class="nc">&nbsp;            return ResponseEntity.badRequest().body(this.failure); // 400 Bad Request</b>
+&nbsp;        }
+&nbsp;        try {
+<b class="fc">&nbsp;            this.AppUserRepository.save(appUser);</b>
+<b class="fc">&nbsp;            return ResponseEntity.ok(this.success); // 200 OK</b>
+&nbsp;        } catch (DataIntegrityViolationException e) {
+&nbsp;            // This usually happens if the username already exists (unique constraint)
+<b class="fc">&nbsp;            return ResponseEntity.status(HttpStatus.CONFLICT)</b>
+<b class="fc">&nbsp;                    .body(&quot;Username already exists&quot;);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * PUT /AppUser/{id}
+&nbsp;     * Updates an existing AppUser&#39;s details works for multiple
+&nbsp;     * fields or one at a time as long as id is found
+&nbsp;     * If the user does not exist, returns null.
+&nbsp;     *
+&nbsp;     * @param id the ID of the user to update
+&nbsp;     * @param request the updated user data from the request body
+&nbsp;     * @return the updated AppUser object, or null if not found
+&nbsp;     */
+&nbsp;    @PutMapping(path = &quot;/AppUser/{id}&quot;)
+&nbsp;    AppUser updateAppUser(@PathVariable long id, @RequestBody AppUser request) {
+<b class="fc">&nbsp;        AppUser existingUser = this.AppUserRepository.findById(id);</b>
+<b class="pc">&nbsp;        if (existingUser == null) {</b>
+<b class="nc">&nbsp;            return null;</b>
+&nbsp;        } else {
+<b class="pc">&nbsp;            if (!Objects.equals(request.getFirstName(),&quot;&quot;)) {</b>
+<b class="fc">&nbsp;                existingUser.setFirstName(request.getFirstName());</b>
+&nbsp;            }
+<b class="pc">&nbsp;            if (!Objects.equals(request.getLastName(),&quot;&quot;)) {</b>
+<b class="nc">&nbsp;                existingUser.setLastName(request.getLastName());</b>
+&nbsp;            }
+<b class="pc">&nbsp;            if (!Objects.equals(request.getEmail(),&quot;&quot;)) {</b>
+<b class="nc">&nbsp;                existingUser.setEmail(request.getEmail());</b>
+&nbsp;            }
+<b class="pc">&nbsp;            if (!Objects.equals(request.getPassword(), &quot;&quot;)) {</b>
+<b class="nc">&nbsp;                existingUser.setPassword(request.getPassword());</b>
+&nbsp;            }
+<b class="pc">&nbsp;            if (!Objects.equals(request.getAge(), &quot;&quot;)) { // careful: primitive int defaults to 0</b>
+<b class="fc">&nbsp;                existingUser.setAge(request.getAge());</b>
+&nbsp;            }
+<b class="pc">&nbsp;            if (!Objects.equals(request.getUsername(), &quot;&quot;)) {</b>
+<b class="nc">&nbsp;                existingUser.setUsername(request.getUsername());</b>
+&nbsp;            }
+<b class="pc">&nbsp;            if (request.getChips() != null) {</b>
+<b class="fc">&nbsp;                existingUser.setChips(request.getChips());</b>
+&nbsp;            }
+<b class="fc">&nbsp;            return AppUserRepository.save(existingUser);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Updates an existing {@link AppUser} identified by their username.
+&nbsp;     * &lt;p&gt;
+&nbsp;     * This endpoint allows partial updates. Only non-empty fields in the request
+&nbsp;     * body will overwrite the existing user&#39;s corresponding fields.
+&nbsp;     *
+&nbsp;     * @param username the current username of the user to update
+&nbsp;     * @param request  an {@link AppUser} object containing the updated fields
+&nbsp;     * @return the updated {@link AppUser} if found, otherwise {@code null}
+&nbsp;     */
+&nbsp;    @PutMapping(path = &quot;/AppUser/username/{username}&quot;)
+&nbsp;    AppUser usernameUpdateAppUser(@PathVariable String username, @RequestBody AppUser request) {
+<b class="fc">&nbsp;        AppUser existingUser = this.AppUserRepository.findByUsername(username);</b>
+<b class="pc">&nbsp;        if (existingUser == null) {</b>
+<b class="nc">&nbsp;            return null;</b>
+&nbsp;        } else {
+<b class="pc">&nbsp;            if (!Objects.equals(request.getFirstName(), &quot;&quot;)) {</b>
+<b class="nc">&nbsp;                existingUser.setFirstName(request.getFirstName());</b>
+&nbsp;            }
+<b class="pc">&nbsp;            if (!Objects.equals(request.getLastName(), &quot;&quot;)) {</b>
+<b class="nc">&nbsp;                existingUser.setLastName(request.getLastName());</b>
+&nbsp;            }
+<b class="pc">&nbsp;            if (!Objects.equals(request.getEmail(), &quot;&quot;)) {</b>
+<b class="fc">&nbsp;                existingUser.setEmail(request.getEmail());</b>
+&nbsp;            }
+<b class="pc">&nbsp;            if (!Objects.equals(request.getPassword(), &quot;&quot;)) {</b>
+<b class="nc">&nbsp;                existingUser.setPassword(request.getPassword());</b>
+&nbsp;            }
+<b class="pc">&nbsp;            if (!Objects.equals(request.getAge(), &quot;&quot;)) {</b>
+<b class="fc">&nbsp;                existingUser.setAge(request.getAge());</b>
+&nbsp;            }
+<b class="pc">&nbsp;            if (!Objects.equals(request.getUsername(), &quot;&quot;)) {</b>
+<b class="nc">&nbsp;                existingUser.setUsername(request.getUsername());</b>
+&nbsp;            }
+<b class="pc">&nbsp;            if (request.getChips() != null) {</b>
+<b class="fc">&nbsp;                existingUser.setChips(request.getChips());</b>
+&nbsp;            }
+<b class="fc">&nbsp;            return AppUserRepository.save(existingUser);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * DELETE /AppUser/{id}
+&nbsp;     * Deletes a user by their ID.
+&nbsp;     *
+&nbsp;     * @param id the ID of the user to delete
+&nbsp;     * @return a JSON success message
+&nbsp;     */
+&nbsp;    @DeleteMapping(path = {&quot;/AppUser/{id}&quot;})
+&nbsp;    String deleteAppUser(@PathVariable long id) {
+<b class="fc">&nbsp;        this.AppUserRepository.deleteById(id);</b>
+<b class="fc">&nbsp;        return this.success;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Retrieves an AppUser by their username.
+&nbsp;     *
+&nbsp;     * @param username the username of the user to retrieve
+&nbsp;     * @return the AppUser object corresponding to the given username,
+&nbsp;     *         or null if no user with that username exists
+&nbsp;     *
+&nbsp;     * @see AppUserRepository#findByUsername(String)
+&nbsp;     *
+&nbsp;     * Example usage:
+&nbsp;     * GET /AppUser/username/johndoe
+&nbsp;     */
+&nbsp;    @GetMapping(path = &quot;/AppUser/username/{username}&quot;)
+&nbsp;    AppUser getUserByUsername(@PathVariable String username) {
+<b class="fc">&nbsp;        return this.AppUserRepository.findByUsername(username);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Deletes an AppUser by their username.
+&nbsp;     *
+&nbsp;     * @param username the username of the user to delete
+&nbsp;     * @return a string indicating the result:
+&nbsp;     *         - returns {@link #failure} if no user with the username exists
+&nbsp;     *         - returns {@link #success} if the user was found and deleted
+&nbsp;     *
+&nbsp;     * @see AppUserRepository#deleteByUsername(String)
+&nbsp;     *
+&nbsp;     * Example usage:
+&nbsp;     * DELETE /AppUser/username/johndoe
+&nbsp;     */
+&nbsp;    @DeleteMapping(path = &quot;/AppUser/username/{username}&quot;)
+&nbsp;    String deleteUserByUsername(@PathVariable String username) {
+<b class="pc">&nbsp;        if(this.AppUserRepository.findByUsername(username) == null) {</b>
+<b class="nc">&nbsp;            return this.failure;</b>
+&nbsp;        }
+&nbsp;        else{
+<b class="fc">&nbsp;            this.AppUserRepository.deleteByUsername(username);</b>
+<b class="fc">&nbsp;            return this.success;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-12-10 15:33</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,215 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > Laptop</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">onetoone.Laptops</a>
+</div>
+
+<h1>Coverage Summary for Class: Laptop (onetoone.Laptops)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Laptop</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/16)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/21)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package onetoone.Laptops;
+&nbsp;
+&nbsp;import jakarta.persistence.Entity;
+&nbsp;import jakarta.persistence.GeneratedValue;
+&nbsp;import jakarta.persistence.GenerationType;
+&nbsp;import jakarta.persistence.Id;
+&nbsp;import jakarta.persistence.OneToOne;
+&nbsp;
+&nbsp;import com.fasterxml.jackson.annotation.JsonIgnore;
+&nbsp;
+&nbsp;import onetoone.Persons.Person;
+&nbsp;
+&nbsp;/**
+&nbsp; * 
+&nbsp; * @author Vivek Bengre
+&nbsp; */ 
+&nbsp;
+&nbsp;@Entity
+&nbsp;public class Laptop {
+&nbsp;    
+&nbsp;    /* 
+&nbsp;     * The annotation @ID marks the field below as the primary key for the table created by springboot
+&nbsp;     * The @GeneratedValue generates a value if not already present, The strategy in this case is to start from 1 and increment for each table
+&nbsp;     */
+&nbsp;    @Id
+&nbsp;    @GeneratedValue(strategy = GenerationType.IDENTITY)
+&nbsp;    private int id;
+&nbsp;    private double cpuClock;
+&nbsp;    private int cpuCores;
+&nbsp;    private int ram;
+&nbsp;    private String manufacturer;
+&nbsp;    private int cost;
+&nbsp;
+&nbsp;    /*
+&nbsp;     * @OneToOne creates a relation between the current entity/table(Laptop) with the entity/table defined below it(Person)
+&nbsp;     * @JsonIgnore is to assure that there is no infinite loop while returning either Person/laptop objects (laptop-&gt;Person-&gt;laptop-&gt;...)
+&nbsp;     */
+&nbsp;    @OneToOne
+&nbsp;    @JsonIgnore
+&nbsp;    private Person Person;
+&nbsp;
+<b class="nc">&nbsp;    public Laptop( double cpuClock, int cpuCores, int ram, String manufacturer, int cost) {</b>
+<b class="nc">&nbsp;        this.cpuClock = cpuClock;</b>
+<b class="nc">&nbsp;        this.cpuCores = cpuCores;</b>
+<b class="nc">&nbsp;        this.ram = ram;</b>
+<b class="nc">&nbsp;        this.manufacturer = manufacturer;</b>
+<b class="nc">&nbsp;        this.cost = cost;</b>
+&nbsp;    }
+&nbsp;
+<b class="nc">&nbsp;    public Laptop() {</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // =============================== Getters and Setters for each field ================================== //
+&nbsp;
+&nbsp;    public int getId(){
+<b class="nc">&nbsp;        return id;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setId(int id){
+<b class="nc">&nbsp;        this.id = id;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public double getCpuClock(){
+<b class="nc">&nbsp;        return cpuClock;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setCpuClock(double cpuClock){
+<b class="nc">&nbsp;        this.cpuClock = cpuClock;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public int getCpuCores(){
+<b class="nc">&nbsp;        return cpuCores;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setCpuCores(int cpuCores){
+<b class="nc">&nbsp;        this.cpuCores = cpuCores;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String getManufacturer(){
+<b class="nc">&nbsp;        return manufacturer;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setManufacturer(String manufacturer){
+<b class="nc">&nbsp;        this.manufacturer = manufacturer;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public int getCost(){
+<b class="nc">&nbsp;        return cost;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setCost(int cost){
+<b class="nc">&nbsp;        this.cost = cost;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Person getPerson(){
+<b class="nc">&nbsp;        return Person;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setPerson(Person Person){
+<b class="nc">&nbsp;        this.Person = Person;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public int getRam(){
+<b class="nc">&nbsp;        return ram;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setRam(int ram){
+<b class="nc">&nbsp;        this.ram = ram;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-12-10 15:33</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,297 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > EuchreServer</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">data.Game.euchre.EuchreWebsocket</a>
+</div>
+
+<h1>Coverage Summary for Class: EuchreServer (data.Game.euchre.EuchreWebsocket)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">EuchreServer</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    20%
+  </span>
+  <span class="absValue">
+    (4/20)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/18)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    6.7%
+  </span>
+  <span class="absValue">
+    (5/75)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package data.Game.euchre.EuchreWebsocket;
+&nbsp;
+&nbsp;import com.fasterxml.jackson.databind.ObjectMapper;
+&nbsp;import data.Game.euchre.EuchreCard;
+&nbsp;import data.Game.euchre.EuchreGame;
+&nbsp;import data.Game.euchre.EuchreService;
+&nbsp;import jakarta.websocket.*;
+&nbsp;import jakarta.websocket.server.PathParam;
+&nbsp;import jakarta.websocket.server.ServerEndpoint;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.stereotype.Component;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Map;
+&nbsp;import java.util.Set;
+&nbsp;import java.util.concurrent.ConcurrentHashMap;
+&nbsp;
+&nbsp;@Component
+&nbsp;@ServerEndpoint(&quot;/euchre/{lobbyCode}&quot;)
+<b class="fc">&nbsp;public class EuchreServer {</b>
+&nbsp;        private static EuchreService euchreService;
+<b class="fc">&nbsp;        private static ObjectMapper objectMapper = new ObjectMapper();</b>
+<b class="fc">&nbsp;    private static final Map&lt;String, Set&lt;Session&gt;&gt; lobbySessions = new ConcurrentHashMap&lt;&gt;();</b>
+&nbsp;
+&nbsp;        @Autowired
+<b class="fc">&nbsp;        public void setObjectMapper(ObjectMapper mapper) { EuchreServer.objectMapper = mapper; }</b>
+&nbsp;
+&nbsp;        @Autowired
+&nbsp;        public void setEuchreService(EuchreService service) {
+<b class="fc">&nbsp;            EuchreServer.euchreService = service;</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        @OnOpen
+&nbsp;        public void onOpen(Session session, @PathParam(&quot;lobbyCode&quot;) String lobbyCode) {
+<b class="nc">&nbsp;            euchreService.addPlayerToLobby(lobbyCode, session);</b>
+<b class="nc">&nbsp;            lobbySessions.computeIfAbsent(lobbyCode, k -&gt; ConcurrentHashMap.newKeySet()).add(session);</b>
+<b class="nc">&nbsp;            sendMessage(session, &quot;Connected to Euchre lobby: &quot; + lobbyCode);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        @OnMessage
+&nbsp;        public void onMessage(Session session, String message, @PathParam(&quot;lobbyCode&quot;) String lobbyCode) {
+&nbsp;            try {
+<b class="nc">&nbsp;                Map&lt;String, Object&gt; msg = objectMapper.readValue(message, Map.class);</b>
+<b class="nc">&nbsp;                String type = (String) msg.get(&quot;type&quot;);</b>
+&nbsp;
+<b class="nc">&nbsp;                switch (type) {</b>
+<b class="nc">&nbsp;                    case &quot;start&quot; -&gt; handleStart(msg, lobbyCode);</b>
+<b class="nc">&nbsp;                    case &quot;pass&quot; -&gt; handlePass(msg, lobbyCode);</b>
+<b class="nc">&nbsp;                    case &quot;chooseSuit&quot; -&gt; handleChooseSuit(msg, lobbyCode);</b>
+<b class="nc">&nbsp;                    case &quot;pickUp&quot; -&gt; handlePickUp(msg, lobbyCode);</b>
+<b class="nc">&nbsp;                    case &quot;play&quot; -&gt; handlePlay(msg, lobbyCode);</b>
+<b class="nc">&nbsp;                    case &quot;state&quot; -&gt; sendFullGameState(session, lobbyCode);</b>
+<b class="nc">&nbsp;                    case &quot;end&quot; -&gt; handleEnd(msg, lobbyCode);</b>
+<b class="nc">&nbsp;                    case &quot;testEnd&quot; -&gt; handleTestEnd(msg, lobbyCode);</b>
+<b class="nc">&nbsp;                    default -&gt; sendMessage(session, &quot;Unknown message type: &quot; + type);</b>
+&nbsp;                }
+&nbsp;            } catch (Exception e) {
+<b class="nc">&nbsp;                sendMessage(session, &quot;Error processing message: &quot; + e.getMessage());</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+&nbsp;        @OnClose
+&nbsp;        public void onClose(Session session, @PathParam(&quot;lobbyCode&quot;) String lobbyCode) {
+<b class="nc">&nbsp;            Set&lt;Session&gt; sessions = lobbySessions.get(lobbyCode);</b>
+<b class="nc">&nbsp;            if (sessions != null) sessions.remove(session);</b>
+<b class="nc">&nbsp;            euchreService.removePlayerFromLobby(lobbyCode, session);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        @OnError
+&nbsp;        public void onError(Session session, Throwable throwable) {
+<b class="nc">&nbsp;            sendMessage(session, &quot;WebSocket error: &quot; + throwable.getMessage());</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        private void handleStart(Map&lt;String, Object&gt; msg, String lobbyCode) {
+<b class="nc">&nbsp;            List&lt;String&gt; usernames = (List&lt;String&gt;) msg.get(&quot;players&quot;);</b>
+<b class="nc">&nbsp;            EuchreGame game = euchreService.startGame(lobbyCode, usernames);</b>
+<b class="nc">&nbsp;            broadcast(lobbyCode, &quot;New Euchre round started. Dealer: &quot; + game.getCurrentDealerUsername() + &quot; || Option card: &quot; + game.getOptionCard().toString());</b>
+<b class="nc">&nbsp;            broadcastGameState(lobbyCode);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        private void handlePass(Map&lt;String, Object&gt; msg, String lobbyCode) {
+&nbsp;            // msg should include &quot;player&quot; (username) but playerPasses in game uses index progression
+<b class="nc">&nbsp;            String player = (String) msg.get(&quot;player&quot;);</b>
+<b class="nc">&nbsp;            String result = euchreService.processPass(lobbyCode, player);</b>
+<b class="nc">&nbsp;            broadcast(lobbyCode, result);</b>
+<b class="nc">&nbsp;            broadcastGameState(lobbyCode);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        private void handleChooseSuit(Map&lt;String, Object&gt; msg, String lobbyCode) {
+<b class="nc">&nbsp;            String player = (String) msg.get(&quot;player&quot;);</b>
+<b class="nc">&nbsp;            String suitStr = (String) msg.get(&quot;suit&quot;);</b>
+<b class="nc">&nbsp;            char suit = suitStr.charAt(0);</b>
+<b class="nc">&nbsp;            String result = euchreService.processChooseSuit(lobbyCode, player, suit);</b>
+<b class="nc">&nbsp;            broadcast(lobbyCode, result);</b>
+<b class="nc">&nbsp;            broadcastGameState(lobbyCode);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        private void handlePickUp(Map&lt;String, Object&gt; msg, String lobbyCode) {
+<b class="nc">&nbsp;            String dealer = (String) msg.get(&quot;dealer&quot;);</b>
+<b class="nc">&nbsp;            Map&lt;String, Object&gt; dropped = (Map&lt;String, Object&gt;) msg.get(&quot;droppedCard&quot;);</b>
+<b class="nc">&nbsp;            int value = (Integer) dropped.get(&quot;value&quot;);</b>
+<b class="nc">&nbsp;            char suit = ((String) dropped.get(&quot;suit&quot;)).charAt(0);</b>
+<b class="nc">&nbsp;            String result = euchreService.processPickUp(lobbyCode, dealer, value, suit);</b>
+<b class="nc">&nbsp;            broadcast(lobbyCode, result);</b>
+<b class="nc">&nbsp;            broadcastGameState(lobbyCode);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        private void handlePlay(Map&lt;String, Object&gt; msg, String lobbyCode) {
+<b class="nc">&nbsp;            String player = (String) msg.get(&quot;player&quot;);</b>
+<b class="nc">&nbsp;            Map&lt;String, Object&gt; cardMap = (Map&lt;String, Object&gt;) msg.get(&quot;card&quot;);</b>
+<b class="nc">&nbsp;            int value = (Integer) cardMap.get(&quot;value&quot;);</b>
+<b class="nc">&nbsp;            char suit = ((String) cardMap.get(&quot;suit&quot;)).charAt(0);</b>
+&nbsp;
+<b class="nc">&nbsp;            String result = euchreService.processPlay(lobbyCode, player, value, suit);</b>
+&nbsp;
+<b class="nc">&nbsp;            broadcast(lobbyCode, result);</b>
+<b class="nc">&nbsp;            broadcastGameState(lobbyCode);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        private void handleEnd(Map&lt;String, Object&gt; msg, String lobbyCode) {
+<b class="nc">&nbsp;            euchreService.endGame(lobbyCode);</b>
+<b class="nc">&nbsp;            broadcast(lobbyCode, &quot;Euchre game ended.&quot;);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        private void sendFullGameState(Session session, String lobbyCode) {
+<b class="nc">&nbsp;            EuchreGame game = euchreService.getGame(lobbyCode);</b>
+<b class="nc">&nbsp;            if (game != null) {</b>
+<b class="nc">&nbsp;                sendJson(session, Map.of(&quot;type&quot;, &quot;gameState&quot;, &quot;game&quot;, game, &quot;currentTurn&quot;, game.getCurrentPlayerUsername()));</b>
+&nbsp;            } else {
+<b class="nc">&nbsp;                sendMessage(session, &quot;No game running for lobby: &quot; + lobbyCode);</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+&nbsp;        private void sendMessage(Session session, String msg) {
+&nbsp;            try {
+<b class="nc">&nbsp;                session.getBasicRemote().sendText(msg);</b>
+&nbsp;            } catch (IOException e) {
+<b class="nc">&nbsp;                e.printStackTrace();</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+&nbsp;        private void broadcast(String lobbyCode, String msg) {
+<b class="nc">&nbsp;            for (Session s : lobbySessions.getOrDefault(lobbyCode, Set.of())) {</b>
+<b class="nc">&nbsp;                sendMessage(s, msg);</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+&nbsp;        private void sendJson(Session session, Object obj) {
+&nbsp;            try {
+<b class="nc">&nbsp;                session.getBasicRemote().sendText(objectMapper.writeValueAsString(obj));</b>
+&nbsp;            } catch (IOException e) {
+<b class="nc">&nbsp;                e.printStackTrace();</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+&nbsp;        private void broadcastGameState(String lobbyCode) {
+<b class="nc">&nbsp;            EuchreGame game = euchreService.getGame(lobbyCode);</b>
+<b class="nc">&nbsp;            if (game == null) return;</b>
+&nbsp;
+<b class="nc">&nbsp;            Map&lt;String, Object&gt; payload = Map.of(</b>
+&nbsp;                &quot;type&quot;, &quot;gameState&quot;,
+&nbsp;                &quot;game&quot;, game,
+<b class="nc">&nbsp;                &quot;currentTurn&quot;, game.getCurrentPlayerUsername()</b>
+&nbsp;            );
+&nbsp;
+&nbsp;            try {
+<b class="nc">&nbsp;                String json = objectMapper.writeValueAsString(payload);</b>
+<b class="nc">&nbsp;                for (Session s : lobbySessions.getOrDefault(lobbyCode, Set.of())) {</b>
+<b class="nc">&nbsp;                    s.getBasicRemote().sendText(json);</b>
+&nbsp;                }
+&nbsp;            } catch (IOException e) {
+<b class="nc">&nbsp;                e.printStackTrace();</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+&nbsp;        private void handleTestEnd(Map&lt;String, Object&gt; msg, String lobbyCode) {
+<b class="nc">&nbsp;            euchreService.forceEndGameForTesting(lobbyCode);</b>
+<b class="nc">&nbsp;            broadcast(lobbyCode, &quot;Euchre game ended.&quot;);</b>
+&nbsp;        }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-12-10 15:33</div>
+</div>
+</body>
+</html>

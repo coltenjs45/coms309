@@ -1,0 +1,230 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > LobbyListWebSocket</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">data.Lobby</a>
+</div>
+
+<h1>Coverage Summary for Class: LobbyListWebSocket (data.Lobby)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">LobbyListWebSocket</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (4/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    25%
+  </span>
+  <span class="absValue">
+    (1/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    41.2%
+  </span>
+  <span class="absValue">
+    (7/17)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package data.Lobby;
+&nbsp;
+&nbsp;import com.fasterxml.jackson.databind.ObjectMapper;
+&nbsp;import jakarta.websocket.OnClose;
+&nbsp;import jakarta.websocket.OnError;
+&nbsp;import jakarta.websocket.OnOpen;
+&nbsp;import jakarta.websocket.Session;
+&nbsp;import jakarta.websocket.server.ServerEndpoint;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.stereotype.Component;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;import java.util.*;
+&nbsp;import java.util.concurrent.CopyOnWriteArraySet;
+&nbsp;
+&nbsp;/**
+&nbsp; * WebSocket endpoint for broadcasting the list of all lobbies to connected clients.
+&nbsp; * &lt;p&gt;
+&nbsp; * This endpoint listens on &lt;code&gt;/ws/lobbies&lt;/code&gt;. Whenever a client connects,
+&nbsp; * they immediately receive the current list of lobbies. The list is also
+&nbsp; * broadcast to all connected clients whenever the {@link #broadcastLobbyList()} method is called.
+&nbsp; */
+&nbsp;@Component
+&nbsp;@ServerEndpoint(&quot;/ws/lobbies&quot;)
+<b class="fc">&nbsp;public class LobbyListWebSocket {</b>
+&nbsp;
+&nbsp;    /** Service to retrieve lobby data */
+&nbsp;    private static LobbyService lobbyService; // New service
+&nbsp;
+&nbsp;    /** Thread-safe set of all currently connected WebSocket sessions */
+<b class="fc">&nbsp;    private static final Set&lt;Session&gt; sessions = new CopyOnWriteArraySet&lt;&gt;();</b>
+&nbsp;    /** JSON object mapper */
+<b class="fc">&nbsp;    private static final ObjectMapper mapper = new ObjectMapper();</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Spring-based setter for injecting the {@link LobbyService}.
+&nbsp;     *
+&nbsp;     * @param service the lobby service
+&nbsp;     */
+&nbsp;    @Autowired
+&nbsp;    public void setLobbyService(LobbyService service) {
+<b class="fc">&nbsp;        LobbyListWebSocket.lobbyService = service;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Called when a new WebSocket connection is opened.
+&nbsp;     * Adds the session to the set of active sessions and sends the current lobby list.
+&nbsp;     *
+&nbsp;     * @param session the new WebSocket session
+&nbsp;     * @throws IOException if sending the lobby list fails
+&nbsp;     */
+&nbsp;    @OnOpen
+&nbsp;    public void onOpen(Session session) throws IOException {
+<b class="nc">&nbsp;        sessions.add(session);</b>
+<b class="nc">&nbsp;        sendLobbyList(session);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Sends the current list of lobbies to a specific session.
+&nbsp;     *
+&nbsp;     * @param session the WebSocket session to send to
+&nbsp;     * @throws IOException if sending the message fails
+&nbsp;     */
+&nbsp;    private void sendLobbyList(Session session) throws IOException {
+<b class="nc">&nbsp;        List&lt;LobbyDTO&gt; lobbies = lobbyService.getAllLobbyDTOs();</b>
+<b class="nc">&nbsp;        String json = mapper.writeValueAsString(Map.of(</b>
+&nbsp;                &quot;type&quot;, &quot;LOBBY_LIST&quot;,
+&nbsp;                &quot;lobbies&quot;, lobbies
+&nbsp;        ));
+<b class="nc">&nbsp;        session.getBasicRemote().sendText(json);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Broadcasts the current list of lobbies to all connected sessions.
+&nbsp;     */
+&nbsp;    public static void broadcastLobbyList() {
+&nbsp;        try {
+<b class="fc">&nbsp;            List&lt;LobbyDTO&gt; lobbies = lobbyService.getAllLobbyDTOs();</b>
+<b class="fc">&nbsp;            String json = mapper.writeValueAsString(Map.of(</b>
+&nbsp;                    &quot;type&quot;, &quot;LOBBY_LIST&quot;,
+&nbsp;                    &quot;lobbies&quot;, lobbies
+&nbsp;            ));
+<b class="pc">&nbsp;            for (Session session : sessions) {</b>
+<b class="nc">&nbsp;                if (session.isOpen()) {</b>
+<b class="nc">&nbsp;                    session.getBasicRemote().sendText(json);</b>
+&nbsp;                }
+&nbsp;            }
+&nbsp;        } catch (IOException e) {
+<b class="nc">&nbsp;            e.printStackTrace();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Called when a WebSocket connection is closed.
+&nbsp;     * Removes the session from the set of active sessions.
+&nbsp;     *
+&nbsp;     * @param session the WebSocket session that was closed
+&nbsp;     */
+&nbsp;    @OnClose
+&nbsp;    public void onClose(Session session) {
+<b class="nc">&nbsp;        sessions.remove(session);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Called when a WebSocket error occurs.
+&nbsp;     *
+&nbsp;     * @param session   the WebSocket session in which the error occurred
+&nbsp;     * @param throwable the error that occurred
+&nbsp;     */
+&nbsp;    @OnError
+&nbsp;    public void onError(Session session, Throwable throwable) {
+<b class="nc">&nbsp;        System.err.println(&quot;WebSocket error: &quot; + throwable.getMessage());</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-12-10 15:33</div>
+</div>
+</body>
+</html>

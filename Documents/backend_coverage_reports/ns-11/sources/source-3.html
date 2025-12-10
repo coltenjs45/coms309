@@ -1,0 +1,530 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > LobbyController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">data.Lobby</a>
+</div>
+
+<h1>Coverage Summary for Class: LobbyController (data.Lobby)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">LobbyController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    53.3%
+  </span>
+  <span class="absValue">
+    (8/15)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    44.6%
+  </span>
+  <span class="absValue">
+    (25/56)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    51.5%
+  </span>
+  <span class="absValue">
+    (67/130)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package data.Lobby;
+&nbsp;
+&nbsp;import data.User.AppUser;
+&nbsp;import data.User.AppUserRepository;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.List;
+&nbsp;import java.util.concurrent.ThreadLocalRandom;
+&nbsp;
+&nbsp;/**
+&nbsp; * REST controller for managing game lobbies.
+&nbsp; * Provides endpoints to create, update, retrieve, and delete lobbies.
+&nbsp; */
+&nbsp;@RestController
+<b class="fc">&nbsp;public class LobbyController {</b>
+&nbsp;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    LobbyRepository LobbyRepository;
+&nbsp;    @Autowired
+&nbsp;    AppUserRepository AppUserRepository;
+&nbsp;    
+<b class="fc">&nbsp;    private String success = &quot;{\&quot;message\&quot;:\&quot;success\&quot;}&quot;;</b>
+<b class="fc">&nbsp;    private String failure = &quot;{\&quot;message\&quot;:\&quot;failure\&quot;}&quot;;</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * GET /Lobby
+&nbsp;     * &lt;p&gt;
+&nbsp;     * Retrieves all lobbies from the database.
+&nbsp;     *
+&nbsp;     * @return a list of all {@link Lobby} entities
+&nbsp;     */
+&nbsp;    @GetMapping(path = {&quot;/Lobby&quot;}) List&lt;Lobby&gt; getAllLobbies() {
+<b class="nc">&nbsp;         return this.LobbyRepository.findAll();</b>
+&nbsp;     }
+&nbsp;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Retrieves all {@link Lobby} objects that match the specified {@link GameType}.
+&nbsp;     * This endpoint filters the list of all lobbies to only include those whose
+&nbsp;     * {@code gameType} field matches the value provided in the URL path.
+&nbsp;     *Example request:
+&nbsp;     * GET /Lobby/BLACKJACK
+&nbsp;     * GET /Lobby/GO_FISH
+&nbsp;     * GET /Lobby/EUCHRE
+&nbsp;     *
+&nbsp;     * @param gameType the type of game to filter lobbies by (parsed automatically from the URL).
+&nbsp;     *                 Must be a valid constant of the {@link GameType} enum.
+&nbsp;     * @return a list of {@link Lobby} entities whose {@code gameType} matches the given value.
+&nbsp;     */
+&nbsp;    @GetMapping(path = {&quot;/Lobby/GameType/{gameType}&quot;}) List&lt;Lobby&gt; getAllLobbiesByGameType(@PathVariable GameType gameType) {
+<b class="fc">&nbsp;        List&lt;Lobby&gt; lobbies = this.LobbyRepository.findAll();</b>
+<b class="fc">&nbsp;        List&lt;Lobby&gt; lobbiesGameType= new ArrayList&lt;&gt;();</b>
+<b class="fc">&nbsp;        for (Lobby lobby : lobbies) {</b>
+<b class="fc">&nbsp;            if (lobby.getGameType() == gameType) {</b>
+<b class="fc">&nbsp;                lobbiesGameType.add(lobby);</b>
+&nbsp;            }
+&nbsp;        }
+<b class="fc">&nbsp;        return lobbiesGameType;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * GET /Lobby/{lobbyID}
+&nbsp;     * &lt;p&gt;
+&nbsp;     * Retrieves a specific lobby by its ID.
+&nbsp;     *
+&nbsp;     * @param lobbyID the ID of the lobby to retrieve
+&nbsp;     * @return the {@link Lobby} entity if found, otherwise null
+&nbsp;     */
+&nbsp;    @GetMapping(path = {&quot;/Lobby/{lobbyID}&quot;})
+&nbsp;    Lobby getLobbyById(@PathVariable long lobbyID) {
+<b class="nc">&nbsp;        return this.LobbyRepository.findById(lobbyID);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * GET /Lobby/{lobbyID}
+&nbsp;     * &lt;p&gt;
+&nbsp;     * Retrieves a specific lobby by its ID.
+&nbsp;     *
+&nbsp;     * @param joinCode the joinCode of the lobby to retrieve
+&nbsp;     * @return the {@link Lobby} entity if found, otherwise null
+&nbsp;     */
+&nbsp;    @GetMapping(path = {&quot;/Lobby/joinCode/{joinCode}&quot;})
+&nbsp;    Lobby getLobbyByJoinCode(@PathVariable String joinCode) {
+<b class="fc">&nbsp;        return this.LobbyRepository.findByJoinCode(joinCode);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * POST /Lobby
+&nbsp;     * &lt;p&gt;
+&nbsp;     * Creates a new lobby and saves it to the database.
+&nbsp;     *
+&nbsp;     * @param Lobby the {@link Lobby} object to create
+&nbsp;     * @return the created {@link Lobby} entity
+&nbsp;     */
+&nbsp;    @PostMapping(path = {&quot;/Lobby&quot;})
+&nbsp;    public Lobby createLobby(@RequestBody Lobby Lobby) {
+<b class="nc">&nbsp;        Lobby savedLobby = this.LobbyRepository.save(Lobby);</b>
+<b class="nc">&nbsp;        LobbyListWebSocket.broadcastLobbyList(); // Notify WebSocket clients</b>
+<b class="nc">&nbsp;        return savedLobby;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * POST /Lobby/joinCode/autogen/{username}
+&nbsp;     * &lt;p&gt;
+&nbsp;     * Creates a new lobby with a randomly generated unique join code and adds the specified user as host.
+&nbsp;     *
+&nbsp;     * @param lobby    the {@link Lobby} object to create
+&nbsp;     * @param username the username of the host
+&nbsp;     * @return the generated join code
+&nbsp;     */
+&nbsp;    @PostMapping(path = &quot;/Lobby/joinCode/autogen/{username}&quot;)
+&nbsp;    public String createLobbyWithautogen(@RequestBody Lobby lobby, @PathVariable String username) {
+<b class="fc">&nbsp;        AppUser host = this.AppUserRepository.findByUsername(username);</b>
+<b class="pc">&nbsp;        if (host == null) {</b>
+&nbsp;            // Handle if user not found (optional)
+<b class="nc">&nbsp;            return null;</b>
+&nbsp;        }
+&nbsp;        //set join code
+&nbsp;        String joinCode;
+&nbsp;        // Loop until a unique join code is found
+&nbsp;        do {
+<b class="fc">&nbsp;            joinCode = String.valueOf(ThreadLocalRandom.current().nextInt(1000, 10000));</b>
+<b class="pc">&nbsp;        } while (this.LobbyRepository.existsByJoinCode(joinCode));</b>
+&nbsp;
+<b class="fc">&nbsp;        lobby.setJoinCode(joinCode);</b>
+&nbsp;
+&nbsp;        // Create a list of users with the host
+<b class="fc">&nbsp;        List&lt;AppUser&gt; users = new ArrayList&lt;&gt;();</b>
+<b class="fc">&nbsp;        users.add(host);</b>
+&nbsp;
+&nbsp;        // Assign users to the lobby
+<b class="fc">&nbsp;        lobby.setUsers(users);</b>
+&nbsp;
+&nbsp;        // Assign lobby to user
+<b class="fc">&nbsp;        host.setLobby(lobby);</b>
+&nbsp;
+&nbsp;        // Save the lobby and return it
+<b class="fc">&nbsp;        Lobby savedLobby = this.LobbyRepository.save(lobby);</b>
+<b class="fc">&nbsp;        this.AppUserRepository.save(host);</b>
+<b class="fc">&nbsp;        LobbyListWebSocket.broadcastLobbyList();</b>
+<b class="fc">&nbsp;        return  joinCode;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * POST /Lobby/joinCode/{joinCode}/{username}
+&nbsp;     * &lt;p&gt;
+&nbsp;     * Creates a lobby with a specified join code and adds the host user.
+&nbsp;     *
+&nbsp;     * @param lobby    the {@link Lobby} object to create
+&nbsp;     * @param username the username of the host
+&nbsp;     * @param joinCode the join code for the lobby
+&nbsp;     * @return the created {@link Lobby} entity
+&nbsp;     */
+&nbsp;    @PostMapping(path = &quot;/Lobby/joinCode/{joinCode}/{username}&quot;)
+&nbsp;    public Lobby createLobbyWithJoinCode(@RequestBody Lobby lobby, @PathVariable String username, @PathVariable String joinCode) {
+&nbsp;        // Find the user creating the lobby (host)
+<b class="nc">&nbsp;        AppUser host = this.AppUserRepository.findByUsername(username);</b>
+<b class="nc">&nbsp;        if (host == null) {</b>
+&nbsp;            // Handle if user not found (optional)
+<b class="nc">&nbsp;            return null;</b>
+&nbsp;        }
+&nbsp;        //set join code
+<b class="nc">&nbsp;        lobby.setJoinCode(joinCode);</b>
+&nbsp;
+&nbsp;        // Create a list of users with the host
+<b class="nc">&nbsp;        List&lt;AppUser&gt; users = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;        users.add(host);</b>
+&nbsp;
+&nbsp;        // Assign users to the lobby
+<b class="nc">&nbsp;        lobby.setUsers(users);</b>
+&nbsp;
+&nbsp;        // Assign lobby to user
+<b class="nc">&nbsp;        host.setLobby(lobby);</b>
+&nbsp;
+&nbsp;        // Save the lobby and return it
+<b class="nc">&nbsp;        Lobby savedLobby = this.LobbyRepository.save(lobby);</b>
+<b class="nc">&nbsp;        this.AppUserRepository.save(host);</b>
+<b class="nc">&nbsp;        LobbyListWebSocket.broadcastLobbyList();</b>
+<b class="nc">&nbsp;        return  savedLobby;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * DELETE /Lobby/empty
+&nbsp;     * &lt;p&gt;
+&nbsp;     * Deletes all empty lobbies from the database.
+&nbsp;     *
+&nbsp;     * @return JSON message indicating how many lobbies were deleted
+&nbsp;     */
+&nbsp;    @DeleteMapping(path = {&quot;/Lobby/empty&quot;})
+&nbsp;    public String deleteEmptyLobbies() {
+<b class="fc">&nbsp;        List&lt;Lobby&gt; allLobbies = this.LobbyRepository.findAll();</b>
+<b class="fc">&nbsp;        List&lt;Lobby&gt; emptyLobbies = new ArrayList&lt;&gt;();</b>
+&nbsp;
+<b class="fc">&nbsp;        for (Lobby lobby : allLobbies) {</b>
+<b class="pc">&nbsp;            if (lobby.getUsers() == null || lobby.getUsers().isEmpty()) {</b>
+<b class="fc">&nbsp;                emptyLobbies.add(lobby);</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+<b class="pc">&nbsp;        if (emptyLobbies.isEmpty()) {</b>
+<b class="nc">&nbsp;            return &quot;{\&quot;message\&quot;:\&quot;no empty lobbies found\&quot;}&quot;;</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // For each empty lobby, delete it and make sure relationships are cleared
+<b class="fc">&nbsp;        for (Lobby lobby : emptyLobbies) {</b>
+<b class="fc">&nbsp;            this.LobbyRepository.delete(lobby);</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        LobbyListWebSocket.broadcastLobbyList();</b>
+<b class="fc">&nbsp;        return &quot;{\&quot;message\&quot;:\&quot;deleted &quot; + emptyLobbies.size() + &quot; empty lobbies\&quot;}&quot;;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * PUT /Lobby/{lobbyID}
+&nbsp;     * &lt;p&gt;
+&nbsp;     * Updates an existing lobby by its ID. Only updates fields that are provided
+&nbsp;     * in the request body (currently supports updating {@code gameType} and {@code users}).
+&nbsp;     * I am going to make a new method that can just update users inside a lobby for ease of use
+&nbsp;     * if you want to change users you must relist users that are currently in lobby plus new additions in json
+&nbsp;     *
+&nbsp;     * @param lobbyID      the ID of the lobby to update
+&nbsp;     * @param lobbyDetails the {@link Lobby} object containing fields to update
+&nbsp;     * @return a JSON string indicating success or failure
+&nbsp;     */
+&nbsp;    @PutMapping(path= {&quot;/Lobby/{lobbyID}&quot;})
+&nbsp;    public String updateLobby(@PathVariable long lobbyID, @RequestBody Lobby lobbyDetails){
+<b class="nc">&nbsp;        Lobby oldLobby= this.LobbyRepository.findById(lobbyID);</b>
+<b class="nc">&nbsp;        if (oldLobby == null){</b>
+<b class="nc">&nbsp;            return this.failure;</b>
+&nbsp;        }
+&nbsp;        else {
+<b class="nc">&nbsp;            if (lobbyDetails.getGameType() != null) {</b>
+<b class="nc">&nbsp;                oldLobby.setGameType(lobbyDetails.getGameType());</b>
+&nbsp;            }
+<b class="nc">&nbsp;            if (lobbyDetails.getUsers() != null) {</b>
+<b class="nc">&nbsp;                oldLobby.setUsers(lobbyDetails.getUsers());</b>
+&nbsp;            }
+<b class="nc">&nbsp;            if(lobbyDetails.getJoinCode() != null) {</b>
+<b class="nc">&nbsp;                oldLobby.setJoinCode(lobbyDetails.getJoinCode());</b>
+&nbsp;            }
+<b class="nc">&nbsp;            this.LobbyRepository.save(oldLobby);</b>
+<b class="nc">&nbsp;            LobbyListWebSocket.broadcastLobbyList();</b>
+<b class="nc">&nbsp;            return this.success;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * PUT /Lobby/joinCode/{joinCode}
+&nbsp;     * &lt;p&gt;
+&nbsp;     * Updates an existing lobby by its join code. Only updates fields provided in the request body.
+&nbsp;     *
+&nbsp;     * @param joinCode     the join code of the lobby to update
+&nbsp;     * @param lobbyDetails the {@link Lobby} object containing fields to update
+&nbsp;     * @return JSON string indicating success or failure
+&nbsp;     */
+&nbsp;    @PutMapping(path= {&quot;/Lobby/joinCode/{joinCode}&quot;})
+&nbsp;    public String updateLobbyByCode(@PathVariable String joinCode, @RequestBody Lobby lobbyDetails){
+<b class="fc">&nbsp;        Lobby oldLobby= this.LobbyRepository.findByJoinCode(joinCode);</b>
+<b class="pc">&nbsp;        if (oldLobby == null){</b>
+<b class="nc">&nbsp;            return this.failure;</b>
+&nbsp;        }
+&nbsp;        else {
+<b class="pc">&nbsp;            if (lobbyDetails.getGameType() != null) {</b>
+<b class="fc">&nbsp;                oldLobby.setGameType(lobbyDetails.getGameType());</b>
+&nbsp;            }
+<b class="pc">&nbsp;            if (lobbyDetails.getUsers() != null) {</b>
+<b class="nc">&nbsp;                oldLobby.setUsers(lobbyDetails.getUsers());</b>
+&nbsp;            }
+<b class="pc">&nbsp;            if(lobbyDetails.getJoinCode() != null){</b>
+<b class="nc">&nbsp;                oldLobby.setJoinCode(lobbyDetails.getJoinCode());</b>
+&nbsp;            }
+<b class="fc">&nbsp;            this.LobbyRepository.save(oldLobby);</b>
+<b class="fc">&nbsp;            LobbyListWebSocket.broadcastLobbyList();</b>
+<b class="fc">&nbsp;            return this.success;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Updates the users in a given lobby by either adding or removing the specified user.
+&nbsp;     * &lt;p&gt;
+&nbsp;     * This endpoint is mapped to &lt;code&gt;/Lobby/{lobbyID}/{username}&lt;/code&gt;.
+&nbsp;     * It first verifies that both the lobby and the user exist. If either is not found,
+&nbsp;     * the method returns {@code this.failure}.
+&nbsp;     * &lt;p&gt;
+&nbsp;     * If the user is already in the lobby, they are removed and their lobby reference is set to {@code null}.
+&nbsp;     * If the user is not in the lobby, they are added and their lobby reference is updated.
+&nbsp;     * Afterward, both the user and the lobby are saved back to their respective repositories.
+&nbsp;     *
+&nbsp;     * @param lobbyID  the unique identifier of the lobby to update
+&nbsp;     * @param username the username of the user to add or remove from the lobby
+&nbsp;     * @return {@code this.success} if the operation was successful,
+&nbsp;     *         otherwise {@code this.failure} if the lobby or user could not be found
+&nbsp;     */
+&nbsp;    @PutMapping(path= {&quot;/Lobby/{lobbyID}/{username}&quot;})
+&nbsp;    public String updateLobbyUsers(@PathVariable long lobbyID, @PathVariable String username){
+<b class="nc">&nbsp;        Lobby lobby = this.LobbyRepository.findById(lobbyID);</b>
+<b class="nc">&nbsp;        if (lobby == null) {</b>
+<b class="nc">&nbsp;            return this.failure; // Lobby not found</b>
+&nbsp;        }
+<b class="nc">&nbsp;        AppUser user = this.AppUserRepository.findByUsername(username);</b>
+<b class="nc">&nbsp;        if (user == null) {</b>
+<b class="nc">&nbsp;            return this.failure; // User not found</b>
+&nbsp;        }
+<b class="nc">&nbsp;        List&lt;AppUser&gt; usersInLobby = lobby.getUsers();</b>
+<b class="nc">&nbsp;        if (usersInLobby.contains(user)) {</b>
+&nbsp;            // User already in lobby -&gt; remove
+<b class="nc">&nbsp;            usersInLobby.remove(user);</b>
+<b class="nc">&nbsp;            user.setLobby(null);</b>
+&nbsp;        } else {
+&nbsp;            // User not in lobby -&gt; add
+<b class="nc">&nbsp;            usersInLobby.add(user);</b>
+<b class="nc">&nbsp;            user.setLobby(lobby);</b>
+&nbsp;        }
+&nbsp;        //after proper list of users created set users in lobby to created list and save
+<b class="nc">&nbsp;        lobby.setUsers(usersInLobby);</b>
+<b class="nc">&nbsp;        this.AppUserRepository.save(user);</b>
+<b class="nc">&nbsp;        this.LobbyRepository.save(lobby);</b>
+<b class="nc">&nbsp;        LobbyListWebSocket.broadcastLobbyList();</b>
+<b class="nc">&nbsp;        return this.success;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * PUT /Lobby/joinCode/{joinCode}/{username}
+&nbsp;     * &lt;p&gt;
+&nbsp;     * Adds or removes a user from a lobby by join code.
+&nbsp;     * If the user is already in the lobby, they are removed; otherwise, they are added.
+&nbsp;     *
+&nbsp;     * @param joinCode the join code of the lobby
+&nbsp;     * @param username the username of the user to add or remove
+&nbsp;     * @return JSON string indicating success or failure
+&nbsp;     */
+&nbsp;    @PutMapping(path= {&quot;/Lobby/joinCode/{joinCode}/{username}&quot;})
+&nbsp;    public String updateLobbyUsersByCode(@PathVariable String joinCode, @PathVariable String username){
+<b class="fc">&nbsp;        Lobby lobby = this.LobbyRepository.findByJoinCode(joinCode);</b>
+<b class="pc">&nbsp;        if (lobby == null) {</b>
+<b class="nc">&nbsp;            return this.failure; // Lobby not found</b>
+&nbsp;        }
+<b class="fc">&nbsp;        AppUser user = this.AppUserRepository.findByUsername(username);</b>
+<b class="pc">&nbsp;        if (user == null) {</b>
+<b class="nc">&nbsp;            return this.failure; // User not found</b>
+&nbsp;        }
+<b class="fc">&nbsp;        List&lt;AppUser&gt; usersInLobby = lobby.getUsers();</b>
+<b class="fc">&nbsp;        if (usersInLobby.contains(user)) {</b>
+&nbsp;            // User already in lobby -&gt; remove
+<b class="fc">&nbsp;            usersInLobby.remove(user);</b>
+<b class="fc">&nbsp;            user.setLobby(null);</b>
+&nbsp;        } else {
+&nbsp;            // User not in lobby -&gt; add
+<b class="fc">&nbsp;            usersInLobby.add(user);</b>
+<b class="fc">&nbsp;            user.setLobby(lobby);</b>
+&nbsp;        }
+&nbsp;        //after proper list of users created set users in lobby to created list and save
+<b class="fc">&nbsp;        lobby.setUsers(usersInLobby);</b>
+<b class="fc">&nbsp;        this.AppUserRepository.save(user);</b>
+<b class="fc">&nbsp;        this.LobbyRepository.save(lobby);</b>
+<b class="fc">&nbsp;        LobbyListWebSocket.broadcastLobbyList();</b>
+<b class="fc">&nbsp;        return this.success;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * DELETE /Lobby/{lobbyID}
+&nbsp;     * &lt;p&gt;
+&nbsp;     * Deletes a lobby by its ID. Also removes the relationship between the lobby
+&nbsp;     * and its associated users before deletion.
+&nbsp;     *
+&nbsp;     * @param lobbyID the ID of the lobby to delete
+&nbsp;     * @return a JSON string indicating success or failure
+&nbsp;     */
+&nbsp;    @DeleteMapping(path = {&quot;/Lobby/{lobbyID}&quot;})
+&nbsp;    String deleteLobby(@PathVariable long lobbyID) {
+<b class="nc">&nbsp;         Lobby lobby = LobbyRepository.findById(lobbyID);</b>
+<b class="nc">&nbsp;         if (lobby == null) {</b>
+<b class="nc">&nbsp;             return this.failure; // Lobby not found</b>
+&nbsp;         }
+<b class="nc">&nbsp;         List&lt;AppUser&gt; usersInLobby = lobby.getUsers();</b>
+<b class="nc">&nbsp;         for (AppUser user : usersInLobby) {</b>
+<b class="nc">&nbsp;            user.setLobby(null); // break the relationship</b>
+&nbsp;         }
+<b class="nc">&nbsp;         this.AppUserRepository.saveAll(usersInLobby);</b>
+<b class="nc">&nbsp;         this.LobbyRepository.deleteById(lobbyID);</b>
+<b class="nc">&nbsp;         LobbyListWebSocket.broadcastLobbyList();</b>
+<b class="nc">&nbsp;         return this.success;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * DELETE /Lobby/joinCode/{joinCode}
+&nbsp;     * &lt;p&gt;
+&nbsp;     * Deletes a lobby by its join code and clears relationships with users.
+&nbsp;     *
+&nbsp;     * @param joinCode the join code of the lobby to delete
+&nbsp;     * @return JSON string indicating success or failure
+&nbsp;     */
+&nbsp;    @DeleteMapping(path = {&quot;/Lobby/joinCode/{joinCode}&quot;})
+&nbsp;    String deleteLobbyByCode(@PathVariable String joinCode) {
+<b class="fc">&nbsp;        Lobby lobby = LobbyRepository.findByJoinCode(joinCode);</b>
+<b class="fc">&nbsp;        if (lobby == null) {</b>
+<b class="fc">&nbsp;            return this.failure; // Lobby not found</b>
+&nbsp;        }
+<b class="fc">&nbsp;        List&lt;AppUser&gt; usersInLobby = lobby.getUsers();</b>
+<b class="fc">&nbsp;        for (AppUser user : usersInLobby) {</b>
+<b class="fc">&nbsp;            user.setLobby(null); // break the relationship</b>
+&nbsp;        }
+<b class="fc">&nbsp;        this.AppUserRepository.saveAll(usersInLobby);</b>
+<b class="fc">&nbsp;        this.LobbyRepository.deleteByJoinCode(joinCode);</b>
+<b class="fc">&nbsp;        LobbyListWebSocket.broadcastLobbyList();</b>
+<b class="fc">&nbsp;        return this.success;</b>
+&nbsp;    }
+&nbsp;}
+&nbsp;
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-12-10 15:33</div>
+</div>
+</body>
+</html>

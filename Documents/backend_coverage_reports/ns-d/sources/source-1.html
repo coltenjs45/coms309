@@ -1,0 +1,207 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > EuchreHistoryController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">data.Game.euchre.history</a>
+</div>
+
+<h1>Coverage Summary for Class: EuchreHistoryController (data.Game.euchre.history)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">EuchreHistoryController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    12.5%
+  </span>
+  <span class="absValue">
+    (1/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    4%
+  </span>
+  <span class="absValue">
+    (1/25)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package data.Game.euchre.history;
+&nbsp;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;/euchre/history&quot;)
+<b class="fc">&nbsp;public class EuchreHistoryController {</b>
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private EuchreMatchHistoryRepository matchHistoryRepository;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Get a match by its database ID (primary key)
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/match/db/{id}&quot;)
+&nbsp;    public EuchreMatchHistoryEntity getMatchByDbId(@PathVariable Long id) {
+<b class="nc">&nbsp;        return matchHistoryRepository.findById(id)</b>
+<b class="nc">&nbsp;                .orElseThrow(() -&gt; new RuntimeException(&quot;Match not found: &quot; + id));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Get a match by its unique matchId (UUID from your game)
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/match/{matchId}&quot;)
+&nbsp;    public EuchreMatchHistoryEntity getMatchByMatchId(@PathVariable String matchId) {
+<b class="nc">&nbsp;        EuchreMatchHistoryEntity match = matchHistoryRepository.findByMatchId(matchId);</b>
+<b class="nc">&nbsp;        if (match == null) {</b>
+<b class="nc">&nbsp;            throw new RuntimeException(&quot;Match not found: &quot; + matchId);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return match;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Get all matches a player participated in
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/player/{username}&quot;)
+&nbsp;    public List&lt;EuchreMatchHistoryEntity&gt; getMatchesByPlayer(@PathVariable String username) {
+<b class="nc">&nbsp;        return matchHistoryRepository.findAllByPlayer(username);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Delete a match by DB id
+&nbsp;     */
+&nbsp;    @DeleteMapping(&quot;/match/db/{id}&quot;)
+&nbsp;    public String deleteMatchByDbId(@PathVariable Long id) {
+<b class="nc">&nbsp;        if (!matchHistoryRepository.existsById(id)) {</b>
+<b class="nc">&nbsp;            throw new RuntimeException(&quot;Cannot delete: match not found: &quot; + id);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        matchHistoryRepository.deleteById(id);</b>
+<b class="nc">&nbsp;        return &quot;Deleted match with DB id: &quot; + id;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Delete a match by matchId (string)
+&nbsp;     */
+&nbsp;    @DeleteMapping(&quot;/match/{matchId}&quot;)
+&nbsp;    public String deleteMatchByMatchId(@PathVariable String matchId) {
+<b class="nc">&nbsp;        EuchreMatchHistoryEntity match = matchHistoryRepository.findByMatchId(matchId);</b>
+<b class="nc">&nbsp;        if (match == null) {</b>
+<b class="nc">&nbsp;            throw new RuntimeException(&quot;Cannot delete: match not found: &quot; + matchId);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        matchHistoryRepository.delete(match);</b>
+<b class="nc">&nbsp;        return &quot;Deleted match with matchId: &quot; + matchId;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Delete all matches a player participated in
+&nbsp;     */
+&nbsp;    @DeleteMapping(&quot;/player/{username}&quot;)
+&nbsp;    public String deleteAllPlayerMatches(@PathVariable String username) {
+<b class="nc">&nbsp;        List&lt;EuchreMatchHistoryEntity&gt; matches = matchHistoryRepository.findAllByPlayer(username);</b>
+<b class="nc">&nbsp;        if (matches.isEmpty()) {</b>
+<b class="nc">&nbsp;            return &quot;No matches found for user: &quot; + username;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        matchHistoryRepository.deleteAll(matches);</b>
+<b class="nc">&nbsp;        return &quot;Deleted &quot; + matches.size() + &quot; matches for player: &quot; + username;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Delete ALL euchre history (admin/debug method)
+&nbsp;     */
+&nbsp;    @DeleteMapping(&quot;/all&quot;)
+&nbsp;    public String deleteAllHistory() {
+<b class="nc">&nbsp;        long count = matchHistoryRepository.count();</b>
+<b class="nc">&nbsp;        matchHistoryRepository.deleteAll();</b>
+<b class="nc">&nbsp;        return &quot;Deleted ALL Euchre match history (&quot; + count + &quot; records).&quot;;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-12-10 15:33</div>
+</div>
+</body>
+</html>
