@@ -1,4 +1,4 @@
-package data.Lobby;
+package data.User;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
