@@ -292,10 +292,10 @@ public class LobbyViewActivity extends AppCompatActivity implements WebSocketLis
                             case "GO_FISH":
                                 i = new Intent(this, GofishActivity.class);
                                 break;
-//                                TODO
-//                            case "EUCHRE":
-//                                i = new Intent(this, EuchreActivity.class);
-//                                break;
+//
+                            case "EUCHRE":
+                                i = new Intent(this, EuchreActivity.class);
+                                break;
                             case "CRAZY8":
                                 i = new Intent(this, com.example.androidexample.crazy8.Crazy8Activity.class);
                                 break;
