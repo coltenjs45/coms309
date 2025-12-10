@@ -1,0 +1,230 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > PeopleController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">coms309.people</a>
+</div>
+
+<h1>Coverage Summary for Class: PeopleController (coms309.people)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">PeopleController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/19)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package coms309.people;
+&nbsp;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.HashMap;
+&nbsp;import java.util.List;
+&nbsp;import java.util.UUID;
+&nbsp;
+&nbsp;/**
+&nbsp; * Controller used to showcase Create and Read from a LIST
+&nbsp; *
+&nbsp; * @author Vivek Bengre
+&nbsp; */
+&nbsp;
+&nbsp;/**
+&nbsp; * I used this experiment to familiarize myself with postman
+&nbsp; */
+&nbsp;@RestController
+<b class="nc">&nbsp;public class PeopleController {</b>
+&nbsp;
+&nbsp;    // Note that there is only ONE instance of PeopleController in 
+&nbsp;    // Springboot system.
+<b class="nc">&nbsp;    HashMap&lt;String, Person&gt; peopleList = new  HashMap&lt;&gt;();</b>
+&nbsp;
+&nbsp;    //CRUDL (create/read/update/delete/list)
+&nbsp;    // use POST, GET, PUT, DELETE, GET methods for CRUDL
+&nbsp;
+&nbsp;    // THIS IS THE LIST OPERATION
+&nbsp;    // gets all the people in the list and returns it in JSON format
+&nbsp;    // This controller takes no input. 
+&nbsp;    // Springboot automatically converts the list to JSON format 
+&nbsp;    // in this case because of @ResponseBody
+&nbsp;    // Note: To LIST, we use the GET method
+&nbsp;    @GetMapping(&quot;/people&quot;)
+&nbsp;    public  HashMap&lt;String,Person&gt; getAllPersons() {
+<b class="nc">&nbsp;        return peopleList;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // THIS IS THE CREATE OPERATION
+&nbsp;    // springboot automatically converts JSON input into a person object and 
+&nbsp;    // the method below enters it into the list.
+&nbsp;    // It returns a string message in THIS example.
+&nbsp;    // in this case because of @ResponseBody
+&nbsp;    // Note: To CREATE we use POST method
+&nbsp;    @PostMapping(&quot;/people&quot;)
+&nbsp;    public  String createPerson(@RequestBody Person person) {
+<b class="nc">&nbsp;        System.out.println(person);</b>
+<b class="nc">&nbsp;        peopleList.put(person.getFirstName(), person);</b>
+<b class="nc">&nbsp;        return &quot;New person &quot;+ person.getFirstName() + &quot; Saved&quot;;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // THIS IS THE READ OPERATION
+&nbsp;    // Springboot gets the PATHVARIABLE from the URL
+&nbsp;    // We extract the person from the HashMap.
+&nbsp;    // springboot automatically converts Person to JSON format when we return it
+&nbsp;    // in this case because of @ResponseBody
+&nbsp;    // Note: To READ we use GET method
+&nbsp;    @GetMapping(&quot;/people/{firstName}&quot;)
+&nbsp;    public Person getPerson(@PathVariable String firstName) {
+<b class="nc">&nbsp;        Person p = peopleList.get(firstName);</b>
+<b class="nc">&nbsp;        return p;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // THIS IS A GET METHOD
+&nbsp;    // RequestParam is expected from the request under the key &quot;name&quot;
+&nbsp;    // returns all names that contains value passed to the key &quot;name&quot;
+&nbsp;    @GetMapping(&quot;/people/contains&quot;)
+&nbsp;    public List&lt;Person&gt; getPersonByParam(@RequestParam(&quot;name&quot;) String name) {
+<b class="nc">&nbsp;        List&lt;Person&gt; res = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;        for (Person p : peopleList.values()) {</b>
+<b class="nc">&nbsp;            if (p.getFirstName().contains(name) || p.getLastName().contains(name))</b>
+<b class="nc">&nbsp;                res.add(p);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return res;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // THIS IS THE UPDATE OPERATION
+&nbsp;    // We extract the person from the HashMap and modify it.
+&nbsp;    // Springboot automatically converts the Person to JSON format
+&nbsp;    // Springboot gets the PATHVARIABLE from the URL
+&nbsp;    // Here we are returning what we sent to the method
+&nbsp;    // in this case because of @ResponseBody
+&nbsp;    // Note: To UPDATE we use PUT method
+&nbsp;    @PutMapping(&quot;/people/{firstName}&quot;)
+&nbsp;    public Person updatePerson(@PathVariable String firstName, @RequestBody Person p) {
+<b class="nc">&nbsp;        peopleList.replace(firstName, p);</b>
+<b class="nc">&nbsp;        return peopleList.get(firstName);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // UPDATE using RequestParam and ResponseBody with alternate style of declaring params
+&nbsp;    @PutMapping(
+&nbsp;            value=&quot;/people&quot;,
+&nbsp;            params = { &quot;firstName&quot; }
+&nbsp;    )
+&nbsp;    public Person updatePerson2(@RequestParam(&quot;firstName&quot;) String firstName, @RequestBody Person p) {
+<b class="nc">&nbsp;        peopleList.replace(firstName, p);</b>
+<b class="nc">&nbsp;        return peopleList.get(firstName);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // THIS IS THE DELETE OPERATION
+&nbsp;    // Springboot gets the PATHVARIABLE from the URL
+&nbsp;    // We return the entire list -- converted to JSON
+&nbsp;    // in this case because of @ResponseBody
+&nbsp;    // Note: To DELETE we use delete method
+&nbsp;    
+&nbsp;    @DeleteMapping(&quot;/people/{firstName}&quot;)
+&nbsp;    public HashMap&lt;String, Person&gt; deletePerson(@PathVariable String firstName) {
+<b class="nc">&nbsp;        peopleList.remove(firstName);</b>
+<b class="nc">&nbsp;        return peopleList;</b>
+&nbsp;    }
+&nbsp;}
+&nbsp;
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-12-10 15:33</div>
+</div>
+</body>
+</html>

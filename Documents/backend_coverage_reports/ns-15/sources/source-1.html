@@ -1,0 +1,168 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > Main</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">onetomany</a>
+</div>
+
+<h1>Coverage Summary for Class: Main (onetomany)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Main</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/24)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package onetomany;
+&nbsp;
+&nbsp;import java.util.Date;
+&nbsp;
+&nbsp;import org.springframework.boot.CommandLineRunner;
+&nbsp;import org.springframework.boot.SpringApplication;
+&nbsp;import org.springframework.boot.autoconfigure.SpringBootApplication;
+&nbsp;import org.springframework.context.annotation.Bean;
+&nbsp;
+&nbsp;import onetomany.Laptops.Laptop;
+&nbsp;import onetomany.Laptops.LaptopRepository;
+&nbsp;import onetomany.Phones.Phone;
+&nbsp;import onetomany.Phones.PhoneRepository;
+&nbsp;import onetomany.Users.User;
+&nbsp;import onetomany.Users.UserRepository;
+&nbsp;
+&nbsp;@SpringBootApplication
+<b class="nc">&nbsp;class Main {</b>
+&nbsp;
+&nbsp;    public static void main(String[] args) {
+<b class="nc">&nbsp;        SpringApplication.run(Main.class, args);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Create 3 users with their machines and phones
+&nbsp;    @Bean
+&nbsp;    CommandLineRunner initUser(UserRepository userRepository, LaptopRepository laptopRepository, PhoneRepository phoneRepository) {
+<b class="nc">&nbsp;        return args -&gt; {</b>
+<b class="nc">&nbsp;            User user1 = new User(&quot;John&quot;, &quot;john@somemail.com&quot;, new Date());</b>
+<b class="nc">&nbsp;            User user2 = new User(&quot;Jane&quot;, &quot;jane@somemail.com&quot;, new Date());</b>
+<b class="nc">&nbsp;            User user3 = new User(&quot;Justin&quot;, &quot;justin@somemail.com&quot;, new Date());</b>
+<b class="nc">&nbsp;            Laptop laptop1 = new Laptop( 2.5, 4, 8, &quot;Lenovo&quot;, 300);</b>
+<b class="nc">&nbsp;            Laptop laptop2 = new Laptop( 4.1, 8, 16, &quot;Hp&quot;, 800);</b>
+<b class="nc">&nbsp;            Laptop laptop3 = new Laptop( 3.5, 32, 32, &quot;Dell&quot;, 2300); </b>
+<b class="nc">&nbsp;            for(int i=6; i&lt;13; i++)</b>
+<b class="nc">&nbsp;                phoneRepository.save(new Phone(&quot;Apple&quot;, (int)Math.pow(1.3, i), Math.pow(1.1, i)*1000, &quot;iPhone &quot;+i, (int)Math.pow(1.3, i)*100));</b>
+<b class="nc">&nbsp;            user1.setLaptop(laptop1);</b>
+<b class="nc">&nbsp;            user2.setLaptop(laptop2);</b>
+<b class="nc">&nbsp;            user3.setLaptop(laptop3);</b>
+<b class="nc">&nbsp;            user1.addPhones(phoneRepository.findById(1));</b>
+<b class="nc">&nbsp;            user1.addPhones(phoneRepository.findById(2));            </b>
+<b class="nc">&nbsp;            user1.addPhones(phoneRepository.findById(6));</b>
+<b class="nc">&nbsp;            user2.addPhones(phoneRepository.findById(3));</b>
+<b class="nc">&nbsp;            user2.addPhones(phoneRepository.findById(4)); </b>
+<b class="nc">&nbsp;            user3.addPhones(phoneRepository.findById(5));</b>
+<b class="nc">&nbsp;            user3.addPhones(phoneRepository.findById(7));</b>
+<b class="nc">&nbsp;            userRepository.save(user1);</b>
+<b class="nc">&nbsp;            userRepository.save(user2);</b>
+<b class="nc">&nbsp;            userRepository.save(user3);</b>
+&nbsp;        };
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-12-10 15:33</div>
+</div>
+</body>
+</html>

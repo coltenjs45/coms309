@@ -1,0 +1,211 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > Person</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">onetoone.Persons</a>
+</div>
+
+<h1>Coverage Summary for Class: Person (onetoone.Persons)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Person</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/15)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package onetoone.Persons;
+&nbsp;
+&nbsp;import jakarta.persistence.CascadeType;
+&nbsp;import jakarta.persistence.Entity;
+&nbsp;import jakarta.persistence.GeneratedValue;
+&nbsp;import jakarta.persistence.GenerationType;
+&nbsp;import jakarta.persistence.Id;
+&nbsp;import jakarta.persistence.JoinColumn;
+&nbsp;import jakarta.persistence.OneToOne;
+&nbsp;
+&nbsp;import jakarta.validation.constraints.Email;
+&nbsp;import jakarta.validation.constraints.Pattern;
+&nbsp;import lombok.Getter;
+&nbsp;import lombok.Setter;
+&nbsp;import onetoone.Laptops.Laptop;
+&nbsp;
+&nbsp;/**
+&nbsp; * 
+&nbsp; * @author Vivek Bengre
+&nbsp; * 
+&nbsp; */ 
+&nbsp;
+&nbsp;@Entity
+&nbsp;@Getter
+&nbsp;@Setter
+&nbsp;public class Person {
+&nbsp;
+&nbsp;     /* 
+&nbsp;     * The annotation @ID marks the field below as the primary key for the table created by springboot
+&nbsp;     * The @GeneratedValue generates a value if not already present, The strategy in this case is to start from 1 and increment for each table
+&nbsp;     */
+&nbsp;    @Id
+&nbsp;    @GeneratedValue(strategy = GenerationType.IDENTITY)
+&nbsp;    private int id;
+&nbsp;    private String name;
+&nbsp;     /*
+&nbsp;     * Email annotation is part of the hibernate validator package that helps with validation of email
+&nbsp;     * input. In which case, it currently is matching to the regexp that expresses any characters are allowed followed by an &#39;@&#39; except for &#39;|&#39; and &#39;
+&nbsp;     * as they are potential SQL injection risk. Flag here is used to discern that input is not case-sensitive.
+&nbsp;     */
+&nbsp;    @Email(regexp = &quot;^[a-zA-Z0-9_!#$%&amp;&#39;*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$&quot;,
+&nbsp;            flags = Pattern.Flag.CASE_INSENSITIVE)
+&nbsp;    private String emailId;
+&nbsp;    private boolean ifActive;
+&nbsp;
+&nbsp;    /*
+&nbsp;     * @OneToOne creates a relation between the current entity/table(Laptop) with the entity/table defined below it(Person)
+&nbsp;     * cascade is responsible propagating all changes, even to children of the class Eg: changes made to laptop within a Person object will be reflected
+&nbsp;     * in the database (more info : https://www.baeldung.com/jpa-cascade-types)
+&nbsp;     * @JoinColumn defines the ownership of the foreign key i.e. the Person table will have a field called laptop_id
+&nbsp;     */
+&nbsp;    @OneToOne(cascade = CascadeType.ALL)
+&nbsp;    @JoinColumn(name = &quot;laptop_id&quot;)
+&nbsp;    private Laptop laptop;
+&nbsp;
+<b class="nc">&nbsp;    public Person(String name, String emailId) {</b>
+<b class="nc">&nbsp;        this.name = name;</b>
+<b class="nc">&nbsp;        this.emailId = emailId;</b>
+<b class="nc">&nbsp;        this.ifActive = true;</b>
+&nbsp;    }
+&nbsp;
+<b class="nc">&nbsp;    public Person() {</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // =============================== Getters and Setters for each field ================================== //
+&nbsp;
+&nbsp;    public int getId(){
+<b class="nc">&nbsp;        return id;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setId(int id){
+<b class="nc">&nbsp;        this.id = id;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String getName(){
+<b class="nc">&nbsp;        return name;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setName(String name){
+<b class="nc">&nbsp;        this.name = name;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String getEmailId(){
+<b class="nc">&nbsp;        return emailId;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setEmailId(String emailId){
+<b class="nc">&nbsp;        this.emailId = emailId;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public boolean getIsActive(){
+<b class="nc">&nbsp;        return ifActive;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setIfActive(boolean ifActive){
+<b class="nc">&nbsp;        this.ifActive = ifActive;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Laptop getLaptop(){
+<b class="nc">&nbsp;        return laptop;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setLaptop(Laptop laptop){
+<b class="nc">&nbsp;        this.laptop = laptop;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-12-10 15:33</div>
+</div>
+</body>
+</html>

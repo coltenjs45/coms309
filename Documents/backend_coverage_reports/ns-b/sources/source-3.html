@@ -1,0 +1,904 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > EuchreGame</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">data.Game.euchre</a>
+</div>
+
+<h1>Coverage Summary for Class: EuchreGame (data.Game.euchre)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">EuchreGame</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/31)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/98)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/288)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package data.Game.euchre;
+&nbsp;
+&nbsp;import data.Game.euchre.history.EuchreMatchEventEntity;
+&nbsp;import data.Game.euchre.history.EuchreMatchHistoryEntity;
+&nbsp;import data.Game.goFish.history.GoFishMatchHistoryEntity;
+&nbsp;import data.User.Stats.EuchreStats;
+&nbsp;
+&nbsp;import java.time.LocalDateTime;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;/**
+&nbsp; * Represents an entire Euchre game session, including bidding,
+&nbsp; * dealing, trick-taking, scoring, and round progression.
+&nbsp; * Stores player order, teams, the deck, current trick state,
+&nbsp; * and all gameplay-related rules.
+&nbsp; */
+&nbsp;public class EuchreGame {
+&nbsp;    private List&lt;EuchrePlayer&gt; players;
+&nbsp;    private EuchreDeck deck;
+&nbsp;    private List&lt;EuchreCard&gt; currentTrick;
+&nbsp;    private int currentPlayerIndex;
+&nbsp;    private int currentDealerIndex;
+&nbsp;    private char trumpSuit;
+&nbsp;    private char leadSuit;
+&nbsp;    private EuchreCard optionCard;
+&nbsp;    private boolean isBidding;
+&nbsp;    private boolean isChoice;
+&nbsp;    private EuchreTeam teamOne;
+&nbsp;    private EuchreTeam teamTwo;
+&nbsp;    private EuchreMatchHistoryEntity matchHistory;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Basic constructor that takes a list of players in the game
+&nbsp;     * @param players (List of players)
+&nbsp;     */
+<b class="nc">&nbsp;    public EuchreGame(List&lt;EuchrePlayer&gt; players) {</b>
+<b class="nc">&nbsp;        this.players = players;</b>
+<b class="nc">&nbsp;        this.deck = new EuchreDeck();</b>
+<b class="nc">&nbsp;        this.currentDealerIndex = 0;</b>
+<b class="nc">&nbsp;        this.currentPlayerIndex = 1;</b>
+<b class="nc">&nbsp;        teamOne = new EuchreTeam(players.get(0), players.get(2));</b>
+<b class="nc">&nbsp;        teamTwo = new EuchreTeam(players.get(1), players.get(3));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Starts the round by dealing everyone one their hand and revealing the option card
+&nbsp;     * @return optionCard
+&nbsp;     */
+&nbsp;    public void startGame() {
+<b class="nc">&nbsp;        this.currentTrick = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;        deck.shuffle();</b>
+<b class="nc">&nbsp;        this.dealCards();</b>
+<b class="nc">&nbsp;        this.isBidding = true;</b>
+<b class="nc">&nbsp;        this.isChoice = false;</b>
+<b class="nc">&nbsp;        optionCard = deck.dealCard();</b>
+&nbsp;
+&nbsp;        // Log game start
+<b class="nc">&nbsp;        logEvent(</b>
+&nbsp;                &quot;ROUND_START&quot;,
+&nbsp;                null,
+&nbsp;                null,
+&nbsp;                null,
+<b class="nc">&nbsp;                false,</b>
+&nbsp;                null,
+&nbsp;                null,
+&nbsp;                null,
+<b class="nc">&nbsp;                teamOne.getScore(),</b>
+<b class="nc">&nbsp;                teamTwo.getScore(),</b>
+<b class="nc">&nbsp;                getCurrentDealerUsername(),</b>
+<b class="nc">&nbsp;                optionCard.toString()</b>
+&nbsp;        );
+&nbsp;
+<b class="nc">&nbsp;        System.out.println(&quot;New round started Dealer: &quot; + getCurrentDealerUsername() + &quot; || &quot; + getCurrentPlayerUsername() + &quot;&#39;s turn!&quot;);</b>
+<b class="nc">&nbsp;        System.out.println(&quot;Option Card: &quot; + optionCard);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Gets the option card
+&nbsp;     * @return option card
+&nbsp;     */
+&nbsp;    public EuchreCard getOptionCard() {
+<b class="nc">&nbsp;        return optionCard;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Gets the current trick
+&nbsp;     * @return current trick
+&nbsp;     */
+&nbsp;    public List&lt;EuchreCard&gt; getCurrentTrick() {
+<b class="nc">&nbsp;        return currentTrick;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Starts a new round by dealing everyone one their hand and revealing the option card
+&nbsp;     * @return optionCard
+&nbsp;     */
+&nbsp;    public EuchreCard startNewRound() {
+&nbsp;        // reset deck and current trick list
+<b class="nc">&nbsp;        deck = new EuchreDeck();</b>
+<b class="nc">&nbsp;        this.currentTrick = new ArrayList&lt;&gt;();</b>
+&nbsp;
+&nbsp;        // rotate dealer, set first player to left of dealer
+<b class="nc">&nbsp;        currentDealerIndex = nextPlayerIndex(currentDealerIndex);</b>
+<b class="nc">&nbsp;        currentPlayerIndex = nextPlayerIndex(currentDealerIndex);</b>
+&nbsp;
+&nbsp;        // reset team trick counters and flags
+<b class="nc">&nbsp;        teamOne.clearTricksTaken();</b>
+<b class="nc">&nbsp;        teamTwo.clearTricksTaken();</b>
+<b class="nc">&nbsp;        teamOne.setTeamMemberWhenAlone(false);</b>
+<b class="nc">&nbsp;        teamOne.setTeamPickedUpCard(false);</b>
+<b class="nc">&nbsp;        teamTwo.setTeamMemberWhenAlone(false);</b>
+<b class="nc">&nbsp;        teamTwo.setTeamPickedUpCard(false);</b>
+&nbsp;
+&nbsp;        // reset round-specific suits/flags so bidding happens fresh
+<b class="nc">&nbsp;        this.trumpSuit = &#39;\0&#39;;   // clear old trump</b>
+<b class="nc">&nbsp;        this.leadSuit = &#39;\0&#39;;    // clear old lead</b>
+<b class="nc">&nbsp;        this.optionCard = null;  // will be set after dealing</b>
+<b class="nc">&nbsp;        this.isChoice = false;</b>
+<b class="nc">&nbsp;        this.isBidding = true;</b>
+&nbsp;
+&nbsp;        // deal new hands
+&nbsp;        // (if player hands aren&#39;t cleared by dealCard(player), ensure player.clearHand() before dealing)
+<b class="nc">&nbsp;        this.dealCards();</b>
+&nbsp;
+&nbsp;        // reveal up-card
+<b class="nc">&nbsp;        optionCard = deck.dealCard();</b>
+&nbsp;
+&nbsp;        // Log game start
+<b class="nc">&nbsp;        logEvent(</b>
+&nbsp;                &quot;ROUND_START&quot;,
+&nbsp;                null,
+&nbsp;                null,
+&nbsp;                null,
+<b class="nc">&nbsp;                false,</b>
+&nbsp;                null,
+&nbsp;                null,
+&nbsp;                null,
+<b class="nc">&nbsp;                teamOne.getScore(),</b>
+<b class="nc">&nbsp;                teamTwo.getScore(),</b>
+<b class="nc">&nbsp;                getCurrentDealerUsername(),</b>
+<b class="nc">&nbsp;                optionCard.toString()</b>
+&nbsp;        );
+&nbsp;
+<b class="nc">&nbsp;        System.out.println(&quot;New round started Dealer: &quot; + getCurrentDealerUsername() + &quot; || &quot; + getCurrentPlayerUsername() + &quot;&#39;s turn!&quot;);</b>
+<b class="nc">&nbsp;        System.out.println(&quot;Option Card: &quot; + optionCard);</b>
+<b class="nc">&nbsp;        return optionCard;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Handles passes that occur during the bidding phase
+&nbsp;     */
+&nbsp;    public void playerPasses() {
+<b class="nc">&nbsp;        if (!isBidding &amp;&amp; !isChoice) {</b>
+<b class="nc">&nbsp;            System.out.println(&quot;Cannot pass once bidding is complete.&quot;);</b>
+&nbsp;            return;
+&nbsp;        }
+&nbsp;
+&nbsp;        // If it is the second round and everyone has passed, dealer must choose suit
+<b class="nc">&nbsp;        if (isChoice &amp;&amp; (currentPlayerIndex == currentDealerIndex)) {</b>
+<b class="nc">&nbsp;            System.out.println(&quot;Dealer must choose a suit!&quot;);</b>
+&nbsp;            return;
+&nbsp;        }
+&nbsp;
+&nbsp;        // If we completed the first round of bidding, players now select suit
+<b class="nc">&nbsp;        if (!isChoice &amp;&amp; currentPlayerIndex == currentDealerIndex) {</b>
+<b class="nc">&nbsp;            System.out.println(&quot;Option card has been passed, now you can choose suit for trump.&quot;);</b>
+<b class="nc">&nbsp;            isChoice = true;</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // Increment current player
+<b class="nc">&nbsp;        currentPlayerIndex = nextPlayerIndex(currentPlayerIndex);</b>
+&nbsp;
+&nbsp;        // Log Pass
+<b class="nc">&nbsp;        logEvent(</b>
+&nbsp;                &quot;PASS&quot;,
+<b class="nc">&nbsp;                getCurrentPlayerUsername(),</b>
+&nbsp;                null,
+&nbsp;                null,
+<b class="nc">&nbsp;                false,</b>
+&nbsp;                null,
+&nbsp;                null,
+&nbsp;                null,
+<b class="nc">&nbsp;                teamOne.getScore(),</b>
+<b class="nc">&nbsp;                teamTwo.getScore(),</b>
+<b class="nc">&nbsp;                getCurrentDealerUsername(),</b>
+<b class="nc">&nbsp;                optionCard.toString()</b>
+&nbsp;        );
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Handles the event where the suit has been chosen
+&nbsp;     * @param suit (suit chosen)
+&nbsp;     */
+&nbsp;    public void playerChoosesSuit(char suit) {
+&nbsp;
+<b class="nc">&nbsp;        if (!isChoice &amp;&amp; isBidding) {</b>
+<b class="nc">&nbsp;            System.out.println(&quot;You cannot choose a suit yet.&quot;);</b>
+&nbsp;            return;
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        if (!isBidding &amp;&amp; !isChoice) {</b>
+<b class="nc">&nbsp;            System.out.println(&quot;Trump has already been chosen.&quot;);</b>
+&nbsp;            return;
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        trumpSuit = suit;</b>
+<b class="nc">&nbsp;        isBidding = false;</b>
+<b class="nc">&nbsp;        isChoice = false;</b>
+&nbsp;
+&nbsp;        // See what team choose to pick up the card and is the aggressor
+<b class="nc">&nbsp;        if (teamOne.getTeamMembers().contains(players.get(currentPlayerIndex))) {</b>
+<b class="nc">&nbsp;            teamOne.setTeamPickedUpCard(true);</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            teamTwo.setTeamPickedUpCard(true);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // Log Choose Suit
+<b class="nc">&nbsp;        logEvent(</b>
+&nbsp;                &quot;TRUMP_CHOSEN&quot;,
+<b class="nc">&nbsp;                players.get(currentPlayerIndex).getUsername(),</b>
+<b class="nc">&nbsp;                (teamOne.getTeamMembers().contains(players.get(currentPlayerIndex))) ? &quot;TEAM_1&quot; : &quot;TEAM_2&quot;,</b>
+<b class="nc">&nbsp;                charSuitToString(suit),</b>
+<b class="nc">&nbsp;                false,</b>
+&nbsp;                null,
+&nbsp;                null,
+&nbsp;                null,
+<b class="nc">&nbsp;                teamOne.getScore(),</b>
+<b class="nc">&nbsp;                teamTwo.getScore(),</b>
+<b class="nc">&nbsp;                getCurrentDealerUsername(),</b>
+&nbsp;                null
+&nbsp;        );
+&nbsp;
+&nbsp;
+&nbsp;        // Set current player to player next to dealer
+<b class="nc">&nbsp;        System.out.println(players.get(currentPlayerIndex).getUsername() + &quot; has chosen &quot; + charSuitToString(suit) + &quot; as trump!&quot;);</b>
+<b class="nc">&nbsp;        currentPlayerIndex = nextPlayerIndex(currentDealerIndex);</b>
+<b class="nc">&nbsp;        System.out.println(&quot;It is now &quot; + players.get(currentPlayerIndex).getUsername() + &quot;&#39;s turn!&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Handles the event where the current player decides to pick up the card
+&nbsp;     * @param droppedCard (card that player is removing)
+&nbsp;     * @return true if function worked, false otherwise
+&nbsp;     */
+&nbsp;    public Boolean playerPicksUp(EuchreCard droppedCard) {
+<b class="nc">&nbsp;        EuchrePlayer dealer = players.get(currentDealerIndex);</b>
+&nbsp;
+&nbsp;        // Get Dealer Stats
+<b class="nc">&nbsp;        EuchreStats dealerStats = dealer.getStats();</b>
+&nbsp;
+<b class="nc">&nbsp;        if (isBidding &amp;&amp; dealer.getHand().contains(droppedCard)) {</b>
+<b class="nc">&nbsp;            dealer.addCard(optionCard);</b>
+<b class="nc">&nbsp;            dealer.removeCard(droppedCard);</b>
+<b class="nc">&nbsp;            trumpSuit = optionCard.suit;</b>
+<b class="nc">&nbsp;            isBidding = false;</b>
+&nbsp;
+&nbsp;            // See what team chose to pick up the card and is the aggressor
+<b class="nc">&nbsp;            if (teamOne.getTeamMembers().contains(players.get(currentPlayerIndex))) {</b>
+<b class="nc">&nbsp;                teamOne.setTeamPickedUpCard(true);</b>
+&nbsp;            } else {
+<b class="nc">&nbsp;                teamTwo.setTeamPickedUpCard(true);</b>
+&nbsp;            }
+&nbsp;
+&nbsp;            // Log Pickup
+<b class="nc">&nbsp;            logEvent(</b>
+&nbsp;                    &quot;PICKED_UP&quot;,
+<b class="nc">&nbsp;                    dealer.getUsername(),</b>
+<b class="nc">&nbsp;                    (teamOne.getTeamMembers().contains(dealer)) ? &quot;TEAM_1&quot; : &quot;TEAM_2&quot;,</b>
+<b class="nc">&nbsp;                    charSuitToString(trumpSuit),</b>
+<b class="nc">&nbsp;                    false,</b>
+<b class="nc">&nbsp;                    optionCard.toString(),</b>
+&nbsp;                    null,
+&nbsp;                    null,
+<b class="nc">&nbsp;                    teamOne.getScore(),</b>
+<b class="nc">&nbsp;                    teamTwo.getScore(),</b>
+<b class="nc">&nbsp;                    getCurrentDealerUsername(),</b>
+&nbsp;                    null
+&nbsp;            );
+&nbsp;
+<b class="nc">&nbsp;            System.out.println(dealer.getUsername() + &quot; picked up the &quot; + optionCard.toString());</b>
+<b class="nc">&nbsp;            currentPlayerIndex = nextPlayerIndex(currentDealerIndex);</b>
+<b class="nc">&nbsp;            System.out.println(&quot;It is now &quot; + players.get(currentPlayerIndex).getUsername() + &quot;&#39;s turn!&quot;);</b>
+&nbsp;
+&nbsp;            // Increment time&#39;s picked up stat
+<b class="nc">&nbsp;            if (dealerStats != null) { dealerStats.addTimePickedUp(); }</b>
+&nbsp;
+<b class="nc">&nbsp;            return true;</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            System.out.println(&quot;Not currently in bidding round or dropped card invalid!&quot;);</b>
+<b class="nc">&nbsp;            return false;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Handles laying down a players card will be run four times for a loop
+&nbsp;     * @param currentPlayer (player who lays the card
+&nbsp;     * @param card (card that is being laid)
+&nbsp;     * @return (Message describing what happened
+&nbsp;     */
+&nbsp;    public String takeTurn(EuchrePlayer currentPlayer, EuchreCard card) {
+&nbsp;        // Prevent playing cards during bidding or suit choice
+<b class="nc">&nbsp;        if (isBidding || isChoice) {</b>
+<b class="nc">&nbsp;            return &quot;You cannot play a card during bidding!&quot;;</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // Enforce turn order
+<b class="nc">&nbsp;        if (!players.get(currentPlayerIndex).equals(currentPlayer)) {</b>
+<b class="nc">&nbsp;            return &quot;It is not your turn!&quot;;</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // Check that player has requested card
+<b class="nc">&nbsp;        if (!currentPlayer.getHand().contains(card)) {</b>
+<b class="nc">&nbsp;            return currentPlayer.getUsername() + &quot; does not have the &quot; + card.toString();</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // Set lead suit if trick is empty
+<b class="nc">&nbsp;        if (currentTrick.isEmpty()) {</b>
+<b class="nc">&nbsp;            leadSuit = card.getEffectiveSuit(trumpSuit);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // Gets the list of cards that this player can play
+<b class="nc">&nbsp;        List&lt;EuchreCard&gt; playableCards = currentPlayer.checkPlayableCards(leadSuit, trumpSuit);</b>
+&nbsp;
+&nbsp;        // Check if player is allowed to play card
+<b class="nc">&nbsp;        if (!playableCards.contains(card)) {</b>
+<b class="nc">&nbsp;            return currentPlayer.getUsername() + &quot; can not play the &quot; + card.toString();</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // Add card to current trick and remove it from their hand
+<b class="nc">&nbsp;        currentTrick.add(card);</b>
+&nbsp;
+&nbsp;        // Log Turn
+<b class="nc">&nbsp;        logEvent(</b>
+&nbsp;                &quot;CARD_PLAYED&quot;,
+<b class="nc">&nbsp;                currentPlayer.getUsername(),</b>
+<b class="nc">&nbsp;                (teamOne.getTeamMembers().contains(currentPlayer)) ? &quot;TEAM_1&quot; : &quot;TEAM_2&quot;,</b>
+<b class="nc">&nbsp;                charSuitToString(trumpSuit),</b>
+<b class="nc">&nbsp;                false,</b>
+<b class="nc">&nbsp;                card.toString(),</b>
+<b class="nc">&nbsp;                currentTrick.size(),   // trick position</b>
+&nbsp;                null,
+<b class="nc">&nbsp;                teamOne.getScore(),</b>
+<b class="nc">&nbsp;                teamTwo.getScore(),</b>
+<b class="nc">&nbsp;                getCurrentDealerUsername(),</b>
+&nbsp;                null
+&nbsp;        );
+&nbsp;
+<b class="nc">&nbsp;        currentPlayer.removeCard(card);</b>
+<b class="nc">&nbsp;        currentPlayerIndex = nextPlayerIndex(currentPlayerIndex);</b>
+&nbsp;
+&nbsp;
+<b class="nc">&nbsp;        return currentPlayer.getUsername() + &quot; played the &quot; + card.toString();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Determines the winner of the current trick, awards the trick,
+&nbsp;     * updates the next starting player, and clears the trick.
+&nbsp;     *
+&nbsp;     * @return the player who won the trick
+&nbsp;     */
+&nbsp;    public EuchrePlayer giveTrick() {
+&nbsp;
+&nbsp;        // === 1. Determine winning card ===
+<b class="nc">&nbsp;        EuchreCard winningCard = determineWinningCard(currentTrick, trumpSuit, leadSuit);</b>
+&nbsp;
+&nbsp;        // === 2. Award trick to the correct team ===
+<b class="nc">&nbsp;        EuchrePlayer winner = winningCard.getOwner();</b>
+&nbsp;
+&nbsp;        // Get winner&#39;s stats
+<b class="nc">&nbsp;        EuchreStats winnerStats = winner.getStats();</b>
+&nbsp;
+&nbsp;        // Increment winner&#39;s tricks taken
+<b class="nc">&nbsp;        if (winnerStats != null) { winnerStats.addTrickTaken(); }</b>
+&nbsp;
+<b class="nc">&nbsp;        if (teamOne.getTeamMembers().contains(winner)) {</b>
+<b class="nc">&nbsp;            teamOne.incrementTricksTaken();</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            teamTwo.incrementTricksTaken();</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // Log trick given
+<b class="nc">&nbsp;        logEvent(</b>
+&nbsp;                &quot;TRICK_WON&quot;,
+<b class="nc">&nbsp;                winner.getUsername(),</b>
+<b class="nc">&nbsp;                (teamOne.getTeamMembers().contains(winner)) ? &quot;TEAM_1&quot; : &quot;TEAM_2&quot;,</b>
+<b class="nc">&nbsp;                charSuitToString(trumpSuit),</b>
+<b class="nc">&nbsp;                false,</b>
+&nbsp;                null,
+&nbsp;                null,
+<b class="nc">&nbsp;                winner.getUsername(),</b>
+<b class="nc">&nbsp;                teamOne.getScore(),</b>
+<b class="nc">&nbsp;                teamTwo.getScore(),</b>
+<b class="nc">&nbsp;                getCurrentDealerUsername(),</b>
+&nbsp;                null
+&nbsp;        );
+&nbsp;
+<b class="nc">&nbsp;        System.out.println(winner.getUsername() + &quot;&#39;s &quot; + winningCard + &quot; wins the trick!&quot;);</b>
+&nbsp;
+&nbsp;        // === 3. Save the trick to the player&#39;s history ===
+<b class="nc">&nbsp;        winner.getTricks().add(new ArrayList&lt;&gt;(currentTrick));</b>
+&nbsp;
+&nbsp;        // === 4. The winner leads next ===
+<b class="nc">&nbsp;        currentPlayerIndex = players.indexOf(winner);</b>
+&nbsp;
+&nbsp;        // === 5. Clear trick owners and reset ===
+<b class="nc">&nbsp;        for (EuchreCard card : currentTrick) {</b>
+<b class="nc">&nbsp;            card.setOwner(null);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        currentTrick.clear();</b>
+&nbsp;
+<b class="nc">&nbsp;        return winner;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Called at the end of the round and gives points to winning team
+&nbsp;     */
+&nbsp;    public void givePoints() {
+&nbsp;        // Give points based on score of each team and who is the aggressor
+&nbsp;
+&nbsp;        // Team One picked up the card and is the aggressor
+<b class="nc">&nbsp;        if (teamOne.getTeamPickedUpCard()) {</b>
+&nbsp;
+<b class="nc">&nbsp;            if (teamOne.getTricksTaken() == 5) {</b>
+<b class="nc">&nbsp;                teamOne.incrementScore(2);</b>
+<b class="nc">&nbsp;                System.out.println(&quot;Team One marched Team Two and gets two points!&quot;);</b>
+&nbsp;
+&nbsp;                // Keep track of stat for sweeps
+&nbsp;                // Get both player&#39;s stats
+<b class="nc">&nbsp;                List&lt;EuchrePlayer&gt; winningTeam = teamOne.getTeamMembers();</b>
+<b class="nc">&nbsp;                EuchreStats winnerStatsOne = winningTeam.get(0).getStats();</b>
+<b class="nc">&nbsp;                EuchreStats winnerStatsTwo = winningTeam.get(1).getStats();</b>
+&nbsp;
+&nbsp;                // Increment Sweep for both players
+<b class="nc">&nbsp;                winnerStatsOne.addSweepWon();</b>
+<b class="nc">&nbsp;                winnerStatsTwo.addSweepWon();</b>
+&nbsp;
+<b class="nc">&nbsp;            } else if (teamOne.getTricksTaken() &gt;= 3) {</b>
+&nbsp;                // Team One got the majority, they get one point
+<b class="nc">&nbsp;                teamOne.incrementScore(1);</b>
+<b class="nc">&nbsp;                System.out.println(&quot;Team One got the majority and gets one point!&quot;);</b>
+&nbsp;            } else {
+&nbsp;                // Team One did not get the majority, Team Two gets two points
+<b class="nc">&nbsp;                teamTwo.incrementScore(2);</b>
+<b class="nc">&nbsp;                System.out.println(&quot;Team One got euchred and Team Two gets two points!&quot;);</b>
+&nbsp;            }
+&nbsp;        } else {
+&nbsp;            // Team Two picked up the card and is the aggressor
+&nbsp;
+<b class="nc">&nbsp;            if (teamTwo.getTricksTaken() == 5) {</b>
+<b class="nc">&nbsp;                teamTwo.incrementScore(2);</b>
+<b class="nc">&nbsp;                System.out.println(&quot;Team Two marched Team One and gets two points!&quot;);</b>
+&nbsp;
+&nbsp;                // Keep track of stat for sweeps
+&nbsp;                // Get both player&#39;s stats
+<b class="nc">&nbsp;                List&lt;EuchrePlayer&gt; winningTeam = teamTwo.getTeamMembers();</b>
+<b class="nc">&nbsp;                EuchreStats winnerStatsOne = winningTeam.get(0).getStats();</b>
+<b class="nc">&nbsp;                EuchreStats winnerStatsTwo = winningTeam.get(1).getStats();</b>
+&nbsp;
+&nbsp;                // Increment Sweep for both players
+<b class="nc">&nbsp;                winnerStatsOne.addSweepWon();</b>
+<b class="nc">&nbsp;                winnerStatsTwo.addSweepWon();</b>
+&nbsp;
+<b class="nc">&nbsp;            } else if (teamTwo.getTricksTaken() &gt;= 3) {</b>
+&nbsp;                // Team Two got the majority, they get one point
+<b class="nc">&nbsp;                teamTwo.incrementScore(1);</b>
+<b class="nc">&nbsp;                System.out.println(&quot;Team Two got the majority and gets one point!&quot;);</b>
+&nbsp;            } else {
+&nbsp;                // Team Two did not get the majority, Team One gets two points
+<b class="nc">&nbsp;                teamOne.incrementScore(2);</b>
+<b class="nc">&nbsp;                System.out.println(&quot;Team Two got euchred and Team One gets two points!&quot;);</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;        // Log points given
+<b class="nc">&nbsp;        logEvent(</b>
+&nbsp;                &quot;POINTS_AWARDED&quot;,
+&nbsp;                null,
+<b class="nc">&nbsp;                (teamOne.getTricksTaken() &gt; teamTwo.getTricksTaken()) ? &quot;TEAM_1&quot; : &quot;TEAM_2&quot;,</b>
+<b class="nc">&nbsp;                charSuitToString(trumpSuit),</b>
+<b class="nc">&nbsp;                false,</b>
+&nbsp;                null,
+&nbsp;                null,
+&nbsp;                null,
+<b class="nc">&nbsp;                teamOne.getScore(),</b>
+<b class="nc">&nbsp;                teamTwo.getScore(),</b>
+<b class="nc">&nbsp;                getCurrentDealerUsername(),</b>
+&nbsp;                null
+&nbsp;        );
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Checks if a team has met the scoring threshold
+&nbsp;     * @return winning team
+&nbsp;     */
+&nbsp;    public EuchreTeam getWinner() {
+<b class="nc">&nbsp;        if (teamOne.getScore() &gt;= 5) {</b>
+<b class="nc">&nbsp;            System.out.println(&quot;Team One has won!&quot;);</b>
+&nbsp;
+<b class="nc">&nbsp;            EuchreStats winnerOneStats = teamOne.getTeamMembers().get(0).getStats();</b>
+<b class="nc">&nbsp;            EuchreStats winnerTwoStats = teamOne.getTeamMembers().get(1).getStats();</b>
+<b class="nc">&nbsp;            EuchreStats loserOneStats = teamTwo.getTeamMembers().get(0).getStats();</b>
+<b class="nc">&nbsp;            EuchreStats loserTwoStats = teamTwo.getTeamMembers().get(1).getStats();</b>
+&nbsp;
+<b class="nc">&nbsp;            winnerTwoStats.addGameWon();</b>
+<b class="nc">&nbsp;            winnerTwoStats.addGamePlayed();</b>
+&nbsp;
+<b class="nc">&nbsp;            winnerOneStats.addGameWon();</b>
+<b class="nc">&nbsp;            winnerOneStats.addGamePlayed();</b>
+&nbsp;
+<b class="nc">&nbsp;            loserOneStats.addGamePlayed();</b>
+<b class="nc">&nbsp;            loserTwoStats.addGamePlayed();</b>
+&nbsp;
+&nbsp;            // Log Win
+<b class="nc">&nbsp;            logEvent(</b>
+&nbsp;                    &quot;GAME_WON&quot;,
+&nbsp;                    null,
+&nbsp;                    &quot;TEAM_1&quot;,   // or TEAM_2
+<b class="nc">&nbsp;                    charSuitToString(trumpSuit),</b>
+<b class="nc">&nbsp;                    false,</b>
+&nbsp;                    null,
+&nbsp;                    null,
+&nbsp;                    null,
+<b class="nc">&nbsp;                    teamOne.getScore(),</b>
+<b class="nc">&nbsp;                    teamTwo.getScore(),</b>
+<b class="nc">&nbsp;                    getCurrentDealerUsername(),</b>
+&nbsp;                    null
+&nbsp;            );
+&nbsp;
+<b class="nc">&nbsp;            return teamOne;</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        if (teamTwo.getScore() &gt;= 5) {</b>
+<b class="nc">&nbsp;            System.out.println(&quot;Team Two has won!&quot;);</b>
+&nbsp;
+<b class="nc">&nbsp;            EuchreStats winnerOneStats = teamTwo.getTeamMembers().get(0).getStats();</b>
+<b class="nc">&nbsp;            EuchreStats winnerTwoStats = teamTwo.getTeamMembers().get(1).getStats();</b>
+<b class="nc">&nbsp;            EuchreStats loserOneStats = teamOne.getTeamMembers().get(0).getStats();</b>
+<b class="nc">&nbsp;            EuchreStats loserTwoStats = teamOne.getTeamMembers().get(1).getStats();</b>
+&nbsp;
+<b class="nc">&nbsp;            winnerTwoStats.addGameWon();</b>
+<b class="nc">&nbsp;            winnerTwoStats.addGamePlayed();</b>
+&nbsp;
+<b class="nc">&nbsp;            winnerOneStats.addGameWon();</b>
+<b class="nc">&nbsp;            winnerOneStats.addGamePlayed();</b>
+&nbsp;
+<b class="nc">&nbsp;            loserOneStats.addGamePlayed();</b>
+<b class="nc">&nbsp;            loserTwoStats.addGamePlayed();</b>
+&nbsp;
+&nbsp;            // Log Win
+<b class="nc">&nbsp;            logEvent(</b>
+&nbsp;                    &quot;GAME_WON&quot;,
+&nbsp;                    null,
+&nbsp;                    &quot;TEAM_1&quot;,   // or TEAM_2
+<b class="nc">&nbsp;                    charSuitToString(trumpSuit),</b>
+<b class="nc">&nbsp;                    false,</b>
+&nbsp;                    null,
+&nbsp;                    null,
+&nbsp;                    null,
+<b class="nc">&nbsp;                    teamOne.getScore(),</b>
+<b class="nc">&nbsp;                    teamTwo.getScore(),</b>
+<b class="nc">&nbsp;                    getCurrentDealerUsername(),</b>
+&nbsp;                    null
+&nbsp;            );
+&nbsp;
+<b class="nc">&nbsp;            return teamTwo;</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Gets the current player by the currentPlayerIndex
+&nbsp;     * @return username
+&nbsp;     */
+&nbsp;    public String getCurrentPlayerUsername() {
+<b class="nc">&nbsp;        return players.get(currentPlayerIndex).getUsername();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Gets the current dealer by the currentDealerIndex
+&nbsp;     * @return username
+&nbsp;     */
+&nbsp;    public String getCurrentDealerUsername() {
+<b class="nc">&nbsp;        return players.get(currentDealerIndex).getUsername();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Deals cards to all players in game
+&nbsp;     */
+&nbsp;    public void dealCards() {
+<b class="nc">&nbsp;        for (int i = 0; i &lt; 5; i++) {</b>
+<b class="nc">&nbsp;            for (EuchrePlayer player : players) {</b>
+<b class="nc">&nbsp;                player.addCard(deck.dealCard(player));</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Returns all players in current game
+&nbsp;     * @return List of players
+&nbsp;     */
+&nbsp;    public List&lt;EuchrePlayer&gt; getPlayers() {
+<b class="nc">&nbsp;        return players;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Updates turn by incrementing it
+&nbsp;     */
+&nbsp;    public void nextTurn() {
+<b class="nc">&nbsp;        currentPlayerIndex = (currentPlayerIndex + 1) % players.size();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Gets the index of the player after the given player
+&nbsp;     * @param previousPlayerIndex (previous player)
+&nbsp;     * @return nextPlayerIndex
+&nbsp;     */
+&nbsp;    public int nextPlayerIndex(int previousPlayerIndex) {
+<b class="nc">&nbsp;        return (previousPlayerIndex + 1) % players.size();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Helper method that converts char to string to help with logging
+&nbsp;     * @param suit (suit of card)
+&nbsp;     * @return String of suit
+&nbsp;     */
+&nbsp;    public String charSuitToString(char suit) {
+<b class="nc">&nbsp;        return switch (suit) {</b>
+<b class="nc">&nbsp;            case &#39;h&#39; -&gt; &quot;hearts&quot;;</b>
+<b class="nc">&nbsp;            case &#39;d&#39; -&gt; &quot;diamonds&quot;;</b>
+<b class="nc">&nbsp;            case &#39;s&#39; -&gt; &quot;spades&quot;;</b>
+<b class="nc">&nbsp;            case &#39;c&#39; -&gt; &quot;clubs&quot;;</b>
+<b class="nc">&nbsp;            default -&gt; &quot;Invalid char given!&quot;;</b>
+&nbsp;        };
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Helps to check if a card is considered a trump
+&nbsp;     * @param card (given card
+&nbsp;     * @return true/false
+&nbsp;     */
+&nbsp;    public boolean findIfTrumpOrBower (EuchreCard card) {
+<b class="nc">&nbsp;        return card.getEffectiveSuit(trumpSuit) == trumpSuit;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Get team one score
+&nbsp;     * @return score
+&nbsp;     */
+&nbsp;    public int getTeamOneScore() {
+<b class="nc">&nbsp;        return teamOne.getScore();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Get team two score
+&nbsp;     * @return score
+&nbsp;     */
+&nbsp;    public int getTeamTwoScore() {
+<b class="nc">&nbsp;        return teamTwo.getScore();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Determines winning card
+&nbsp;     * @param trick current trick
+&nbsp;     * @param trumpSuit trump
+&nbsp;     * @param leadSuit lead
+&nbsp;     * @return winning card
+&nbsp;     */
+&nbsp;    private EuchreCard determineWinningCard(List&lt;EuchreCard&gt; trick, char trumpSuit, char leadSuit) {
+<b class="nc">&nbsp;        EuchreCard winner = trick.get(0);</b>
+&nbsp;
+<b class="nc">&nbsp;        for (int i = 1; i &lt; trick.size(); i++) {</b>
+<b class="nc">&nbsp;            EuchreCard challenger = trick.get(i);</b>
+&nbsp;
+<b class="nc">&nbsp;            int winnerRank = getEuchreRank(winner, trumpSuit, leadSuit);</b>
+<b class="nc">&nbsp;            int challengerRank = getEuchreRank(challenger, trumpSuit, leadSuit);</b>
+&nbsp;
+<b class="nc">&nbsp;            if (challengerRank &gt; winnerRank) {</b>
+<b class="nc">&nbsp;                winner = challenger;</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        return winner;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Gets the euchre rank of a card
+&nbsp;     * @param card card
+&nbsp;     * @param trump trump suit
+&nbsp;     * @param lead lead suit
+&nbsp;     * @return value of card
+&nbsp;     */
+&nbsp;    private int getEuchreRank(EuchreCard card, char trump, char lead) {
+<b class="nc">&nbsp;        char effSuit = card.getEffectiveSuit(trump);</b>
+&nbsp;
+&nbsp;        // Right bower
+<b class="nc">&nbsp;        if (card.value == 11 &amp;&amp; card.suit == trump) return 100;</b>
+&nbsp;
+&nbsp;        // Left bower
+<b class="nc">&nbsp;        if (card.value == 11 &amp;&amp; effSuit == trump) return 99;</b>
+&nbsp;
+&nbsp;        // Other trump
+<b class="nc">&nbsp;        if (effSuit == trump) return 50 + card.value;</b>
+&nbsp;
+&nbsp;        // Lead suit (only if actually following lead)
+<b class="nc">&nbsp;        if (effSuit == lead) return 10 + card.value;</b>
+&nbsp;
+&nbsp;        // Not trump, not lead → cannot win
+<b class="nc">&nbsp;        return 0;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Initializes a new match history using the lobby id as match id
+&nbsp;     * @param matchId lobby id
+&nbsp;     */
+&nbsp;    public void initMatchHistory(String matchId) {
+<b class="nc">&nbsp;        EuchreMatchHistoryEntity history = new EuchreMatchHistoryEntity();</b>
+<b class="nc">&nbsp;        history.setMatchId(matchId);</b>
+<b class="nc">&nbsp;        history.setStartTime(LocalDateTime.now());</b>
+<b class="nc">&nbsp;        this.matchHistory = history;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Get match history
+&nbsp;     * @return matchHistory
+&nbsp;     */
+&nbsp;    public EuchreMatchHistoryEntity getMatchHistory() {
+<b class="nc">&nbsp;        return matchHistory;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void logEvent(
+&nbsp;            String eventType,
+&nbsp;            String player,
+&nbsp;            String team,
+&nbsp;            String trumpSuit,
+&nbsp;            Boolean alone,
+&nbsp;            String cardPlayed,
+&nbsp;            Integer trickNumber,
+&nbsp;            String trickWinner,
+&nbsp;            Integer teamAScore,
+&nbsp;            Integer teamBScore,
+&nbsp;            String dealer,
+&nbsp;            String upCard
+&nbsp;    ) {
+<b class="nc">&nbsp;        EuchreMatchEventEntity event = new EuchreMatchEventEntity();</b>
+&nbsp;
+<b class="nc">&nbsp;        event.setMatchHistory(this.matchHistory);</b>
+<b class="nc">&nbsp;        event.setTimestamp(LocalDateTime.now());</b>
+&nbsp;
+<b class="nc">&nbsp;        event.setEventType(eventType);</b>
+<b class="nc">&nbsp;        event.setPlayer(player);</b>
+<b class="nc">&nbsp;        event.setTeam(team);</b>
+&nbsp;
+<b class="nc">&nbsp;        event.setTrumpSuit(trumpSuit);</b>
+<b class="nc">&nbsp;        event.setAlone(alone);</b>
+&nbsp;
+<b class="nc">&nbsp;        event.setCardPlayed(cardPlayed);</b>
+<b class="nc">&nbsp;        event.setTrickNumber(trickNumber);</b>
+&nbsp;
+<b class="nc">&nbsp;        event.setTrickWinner(trickWinner);</b>
+&nbsp;
+<b class="nc">&nbsp;        event.setTeamAScore(teamAScore);</b>
+<b class="nc">&nbsp;        event.setTeamBScore(teamBScore);</b>
+&nbsp;
+<b class="nc">&nbsp;        event.setDealer(dealer);</b>
+<b class="nc">&nbsp;        event.setUpCard(upCard);</b>
+&nbsp;
+<b class="nc">&nbsp;        this.matchHistory.getEvents().add(event);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setTeamOne(EuchreTeam teamOne) {
+<b class="nc">&nbsp;        this.teamOne = teamOne;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setTeamTwo(EuchreTeam teamTwo) {
+<b class="nc">&nbsp;        this.teamTwo = teamTwo;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public EuchreTeam getTeamOne() {
+<b class="nc">&nbsp;        return teamOne;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public EuchreTeam getTeamTwo() {
+<b class="nc">&nbsp;        return teamTwo;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-12-10 15:33</div>
+</div>
+</body>
+</html>

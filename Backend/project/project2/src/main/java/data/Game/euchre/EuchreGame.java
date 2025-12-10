@@ -96,34 +96,19 @@ public class EuchreGame {
      * @return optionCard
      */
     public EuchreCard startNewRound() {
-        // reset deck and current trick list
         deck = new EuchreDeck();
         this.currentTrick = new ArrayList<>();
-
-        // rotate dealer, set first player to left of dealer
         currentDealerIndex = nextPlayerIndex(currentDealerIndex);
         currentPlayerIndex = nextPlayerIndex(currentDealerIndex);
-
-        // reset team trick counters and flags
         teamOne.clearTricksTaken();
         teamTwo.clearTricksTaken();
         teamOne.setTeamMemberWhenAlone(false);
         teamOne.setTeamPickedUpCard(false);
         teamTwo.setTeamMemberWhenAlone(false);
         teamTwo.setTeamPickedUpCard(false);
-
-        // reset round-specific suits/flags so bidding happens fresh
-        this.trumpSuit = '\0';   // clear old trump
-        this.leadSuit = '\0';    // clear old lead
-        this.optionCard = null;  // will be set after dealing
+        this.dealCards();
         this.isChoice = false;
         this.isBidding = true;
-
-        // deal new hands
-        // (if player hands aren't cleared by dealCard(player), ensure player.clearHand() before dealing)
-        this.dealCards();
-
-        // reveal up-card
         optionCard = deck.dealCard();
 
         // Log game start
@@ -151,25 +136,18 @@ public class EuchreGame {
      * Handles passes that occur during the bidding phase
      */
     public void playerPasses() {
-        if (!isBidding && !isChoice) {
-            System.out.println("Cannot pass once bidding is complete.");
-            return;
-        }
+        // Increment current player
+        currentPlayerIndex = nextPlayerIndex(currentPlayerIndex);
 
         // If it is the second round and everyone has passed, dealer must choose suit
         if (isChoice && (currentPlayerIndex == currentDealerIndex)) {
             System.out.println("Dealer must choose a suit!");
-            return;
         }
 
         // If we completed the first round of bidding, players now select suit
         if (!isChoice && currentPlayerIndex == currentDealerIndex) {
-            System.out.println("Option card has been passed, now you can choose suit for trump.");
             isChoice = true;
         }
-
-        // Increment current player
-        currentPlayerIndex = nextPlayerIndex(currentPlayerIndex);
 
         // Log Pass
         logEvent(
@@ -193,17 +171,6 @@ public class EuchreGame {
      * @param suit (suit chosen)
      */
     public void playerChoosesSuit(char suit) {
-
-        if (!isChoice && isBidding) {
-            System.out.println("You cannot choose a suit yet.");
-            return;
-        }
-
-        if (!isBidding && !isChoice) {
-            System.out.println("Trump has already been chosen.");
-            return;
-        }
-
         trumpSuit = suit;
         isBidding = false;
         isChoice = false;
@@ -299,16 +266,6 @@ public class EuchreGame {
      * @return (Message describing what happened
      */
     public String takeTurn(EuchrePlayer currentPlayer, EuchreCard card) {
-        // Prevent playing cards during bidding or suit choice
-        if (isBidding || isChoice) {
-            return "You cannot play a card during bidding!";
-        }
-
-        // Enforce turn order
-        if (!players.get(currentPlayerIndex).equals(currentPlayer)) {
-            return "It is not your turn!";
-        }
-
         // Check that player has requested card
         if (!currentPlayer.getHand().contains(card)) {
             return currentPlayer.getUsername() + " does not have the " + card.toString();
@@ -494,7 +451,7 @@ public class EuchreGame {
      * @return winning team
      */
     public EuchreTeam getWinner() {
-        if (teamOne.getScore() >= 5) {
+        if (teamOne.getScore() >= 2) {
             System.out.println("Team One has won!");
 
             EuchreStats winnerOneStats = teamOne.getTeamMembers().get(0).getStats();
@@ -530,7 +487,7 @@ public class EuchreGame {
             return teamOne;
         }
 
-        if (teamTwo.getScore() >= 5) {
+        if (teamTwo.getScore() >= 2) {
             System.out.println("Team Two has won!");
 
             EuchreStats winnerOneStats = teamTwo.getTeamMembers().get(0).getStats();

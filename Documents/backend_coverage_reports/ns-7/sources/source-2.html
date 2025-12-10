@@ -1,0 +1,222 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > BlackJackDealer</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">data.Game.BlackJack</a>
+</div>
+
+<h1>Coverage Summary for Class: BlackJackDealer (data.Game.BlackJack)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">BlackJackDealer</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/32)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/35)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package data.Game.BlackJack;
+&nbsp;
+&nbsp;import data.Game.MyCard;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;public class BlackJackDealer {
+&nbsp;    private List&lt;BlackJackCard&gt; hand;
+&nbsp;    private boolean hitOnSoft17; // true = dealer hits on soft 17 (optional rule)
+&nbsp;
+&nbsp;    /**
+&nbsp;     * constructor for a balckjack dealer
+&nbsp;     * @param hitOnSoft17 determines what the dealer does if they get a soft 17 delt to them
+&nbsp;     */
+<b class="nc">&nbsp;    public BlackJackDealer(boolean hitOnSoft17) {</b>
+<b class="nc">&nbsp;        this.hand = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;        this.hitOnSoft17 = hitOnSoft17;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**Default constructor (dealer stands on all 17s)*/
+&nbsp;    public BlackJackDealer() {
+<b class="nc">&nbsp;        this(false);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /** Adds a card to the dealer&#39;s hand */
+&nbsp;    public void addCard(BlackJackCard card) {
+<b class="nc">&nbsp;        hand.add(card);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /** Gets the dealer&#39;s hand */
+&nbsp;    public List&lt;BlackJackCard&gt; getHand() {
+<b class="nc">&nbsp;        return hand;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /** Clears the hand (for new round) */
+&nbsp;    public void resetHand() {
+<b class="nc">&nbsp;        hand.clear();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Calculates the dealer&#39;s hand value.
+&nbsp;     * Handles Aces as 1 or 11 optimally.
+&nbsp;     * @return total hand value
+&nbsp;     */
+&nbsp;    public int getHandValue() {
+<b class="nc">&nbsp;        int value = 0;</b>
+<b class="nc">&nbsp;        int aceCount = 0;</b>
+&nbsp;
+<b class="nc">&nbsp;        for (BlackJackCard card : hand) {</b>
+<b class="nc">&nbsp;            int rank = card.getValue(); // 2–14 (J=11, Q=12, K=13, A=14)</b>
+<b class="nc">&nbsp;            if (rank &gt;= 11 &amp;&amp; rank &lt;= 13) {</b>
+<b class="nc">&nbsp;                value += 10;</b>
+<b class="nc">&nbsp;            } else if (rank == 14) {</b>
+<b class="nc">&nbsp;                value += 11;</b>
+<b class="nc">&nbsp;                aceCount++;</b>
+&nbsp;            } else {
+<b class="nc">&nbsp;                value += rank;</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        while (value &gt; 21 &amp;&amp; aceCount &gt; 0) {</b>
+<b class="nc">&nbsp;            value -= 10;</b>
+<b class="nc">&nbsp;            aceCount--;</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        return value;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /** Checks if dealer has a &quot;soft 17&quot; (Ace counted as 11 and total = 17) */
+&nbsp;    private boolean isSoft17() {
+<b class="nc">&nbsp;        int value = 0;</b>
+<b class="nc">&nbsp;        int aceCount = 0;</b>
+&nbsp;
+<b class="nc">&nbsp;        for (BlackJackCard card : hand) {</b>
+<b class="nc">&nbsp;            int rank = card.getValue();</b>
+<b class="nc">&nbsp;            if (rank &gt;= 11 &amp;&amp; rank &lt;= 13) {</b>
+<b class="nc">&nbsp;                value += 10;</b>
+<b class="nc">&nbsp;            } else if (rank == 14) {</b>
+<b class="nc">&nbsp;                value += 11;</b>
+<b class="nc">&nbsp;                aceCount++;</b>
+&nbsp;            } else {
+<b class="nc">&nbsp;                value += rank;</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        return (value == 17 &amp;&amp; aceCount &gt; 0);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Dealer drawing logic — keeps drawing until 17 or higher.
+&nbsp;     * @param deck deck to draw from
+&nbsp;     */
+&nbsp;    public void playTurn(BlackJackDeck deck) {
+&nbsp;        while (true) {
+<b class="nc">&nbsp;            int value = getHandValue();</b>
+&nbsp;
+&nbsp;            // Dealer stands at 17+ unless it&#39;s a soft 17 and hitOnSoft17 is true
+<b class="nc">&nbsp;            if (value &gt; 17 || (value == 17 &amp;&amp; (!hitOnSoft17 || !isSoft17()))) {</b>
+&nbsp;                break;
+&nbsp;            }
+&nbsp;
+&nbsp;            // Dealer hits
+<b class="nc">&nbsp;            addCard(deck.dealCard(true ));</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-12-10 15:33</div>
+</div>
+</body>
+</html>

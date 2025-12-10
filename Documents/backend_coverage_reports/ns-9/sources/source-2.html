@@ -1,0 +1,209 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > Crazy8Deck</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">data.Game.Crazy8</a>
+</div>
+
+<h1>Coverage Summary for Class: Crazy8Deck (data.Game.Crazy8)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Crazy8Deck</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/17)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package data.Game.Crazy8;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.Collections;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;/**
+&nbsp; * Represents a deck of Crazy 8s cards.
+&nbsp; * &lt;p&gt;
+&nbsp; * Supports multiple combined decks, shuffling, dealing cards, and querying size.
+&nbsp; * Cards are instances of {@link Crazy8Card}.
+&nbsp; */
+&nbsp;public class Crazy8Deck {
+&nbsp;
+&nbsp;    /**
+&nbsp;     * The list of cards currently in the deck.
+&nbsp;     */
+&nbsp;    private List&lt;Crazy8Card&gt; cards;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Creates a Crazy 8s deck containing the specified number of standard decks.
+&nbsp;     * &lt;p&gt;
+&nbsp;     * Each deck includes all card values from 2–14 (with 11–14 representing special cards)
+&nbsp;     * for each of the four colors (R, G, B, Y).
+&nbsp;     *
+&nbsp;     * &lt;ul&gt;
+&nbsp;     *     &lt;li&gt;11 → Reverse&lt;/li&gt;
+&nbsp;     *     &lt;li&gt;12 → Skip&lt;/li&gt;
+&nbsp;     *     &lt;li&gt;13 → Draw 2&lt;/li&gt;
+&nbsp;     *     &lt;li&gt;14 → Draw 4 / pick color&lt;/li&gt;
+&nbsp;     *     &lt;li&gt;8  → Wild / pick color&lt;/li&gt;
+&nbsp;     * &lt;/ul&gt;
+&nbsp;     *
+&nbsp;     * @param numberOfDecks the number of 52-card Crazy 8 decks to include
+&nbsp;     */
+<b class="nc">&nbsp;    public Crazy8Deck(int numberOfDecks) {</b>
+<b class="nc">&nbsp;        cards = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;        for (int j = 0; j &lt; numberOfDecks; j++) {</b>
+<b class="nc">&nbsp;            char[] colors = {&#39;R&#39;, &#39;G&#39;, &#39;B&#39;, &#39;Y&#39;};</b>
+&nbsp;
+<b class="nc">&nbsp;            for (char s : colors) {</b>
+<b class="nc">&nbsp;                for (int i = 2; i &lt;= 14; i++) {</b>
+<b class="nc">&nbsp;                    cards.add(new Crazy8Card(i, s));</b>
+&nbsp;                    //11 == reverse
+&nbsp;                    //12 == skip
+&nbsp;                    //13 == draw 2
+&nbsp;                    //14 == draw 4 and pick color
+&nbsp;                    //8  == pick color
+&nbsp;                }
+&nbsp;            }
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Shuffles the deck of cards using the collections class
+&nbsp;     */
+&nbsp;    public void shuffle(){
+<b class="nc">&nbsp;        Collections.shuffle(cards);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Prints out all the cards currently in the deck
+&nbsp;     */
+&nbsp;    public void printDeck() {
+<b class="nc">&nbsp;        for(Crazy8Card card : cards){</b>
+<b class="nc">&nbsp;            System.out.println(card.toString());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Deals the top card from the deck.
+&nbsp;     *
+&nbsp;     * @param isPlayable whether the dealt card should be marked as playable
+&nbsp;     * @return the dealt {@link Crazy8Card}, or {@code null} if the deck is empty
+&nbsp;     */
+&nbsp;    public Crazy8Card dealCard(boolean isPlayable) {
+<b class="nc">&nbsp;        if(!cards.isEmpty()) {</b>
+<b class="nc">&nbsp;            Crazy8Card dealtCard = cards.remove(cards.size()-1);</b>
+<b class="nc">&nbsp;            dealtCard.setIsPlayable(isPlayable);</b>
+<b class="nc">&nbsp;            return dealtCard;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        System.out.println(&quot;Deck is empty&quot;);</b>
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Returns the number of cards remaining in the deck.
+&nbsp;     *
+&nbsp;     * @return the deck size
+&nbsp;     */
+&nbsp;    public int size() {
+<b class="nc">&nbsp;        return cards.size();</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-12-10 15:33</div>
+</div>
+</body>
+</html>

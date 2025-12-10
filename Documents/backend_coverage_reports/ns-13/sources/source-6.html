@@ -1,0 +1,231 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > UserStats</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">data.User.Stats</a>
+</div>
+
+<h1>Coverage Summary for Class: UserStats (data.User.Stats)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">UserStats</td>
+<td class="coverageStat">
+  <span class="percent">
+    88.9%
+  </span>
+  <span class="absValue">
+    (8/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    93.3%
+  </span>
+  <span class="absValue">
+    (14/15)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">UserStats$HibernateInstantiator$j2uFOUX8</td>
+  </tr>
+  <tr>
+    <td class="name">UserStats$HibernateProxy$SxgLj5Sg</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    88.9%
+  </span>
+  <span class="absValue">
+    (8/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    93.3%
+  </span>
+  <span class="absValue">
+    (14/15)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package data.User.Stats;
+&nbsp;
+&nbsp;import data.User.AppUser;
+&nbsp;import jakarta.persistence.*;
+&nbsp;
+&nbsp;import java.util.HashMap;
+&nbsp;import java.util.Map;
+&nbsp;
+&nbsp;/**
+&nbsp; * Represents a collection of all gameplay statistics for a particular user.
+&nbsp; * This entity maintains a mapping from game names to {@link GameStats} objects,
+&nbsp; * enabling the system to track per-game performance for each user.
+&nbsp; */
+&nbsp;@Entity
+&nbsp;public class UserStats {
+&nbsp;
+&nbsp;    @Id
+&nbsp;    @GeneratedValue(strategy = GenerationType.IDENTITY)
+&nbsp;    private long id;
+&nbsp;
+&nbsp;    @OneToOne(mappedBy = &quot;userStats&quot;)
+&nbsp;    private AppUser appUser;
+&nbsp;
+<b class="fc">&nbsp;    @OneToMany(</b>
+&nbsp;            mappedBy = &quot;userStats&quot;,
+&nbsp;            cascade = CascadeType.ALL,
+&nbsp;            orphanRemoval = true,
+&nbsp;            fetch = FetchType.EAGER
+&nbsp;    )
+&nbsp;    @MapKeyColumn(name = &quot;game_name&quot;)
+&nbsp;    private Map&lt;String, GameStats&gt; gameStats = new HashMap&lt;&gt;();
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Default constructor initializes all supported game statistics
+&nbsp;     * so that every user starts with complete stat records.
+&nbsp;     */
+<b class="fc">&nbsp;    public UserStats() {</b>
+<b class="fc">&nbsp;        addGameStats(&quot;Euchre&quot;, new EuchreStats());</b>
+<b class="fc">&nbsp;        addGameStats(&quot;Blackjack&quot;, new BlackjackStats());</b>
+<b class="fc">&nbsp;        addGameStats(&quot;GoFish&quot;, new GoFishStats());</b>
+<b class="fc">&nbsp;        addGameStats(&quot;Crazy8&quot;, new Crazy8Stats());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Secondary constructor that exists only for compatibility
+&nbsp;     * (currently not used but retained for future extensibility).
+&nbsp;     *
+&nbsp;     * @param holder unused parameter placeholder
+&nbsp;     */
+<b class="fc">&nbsp;    public UserStats(int holder) {</b>
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Adds a game statistics entry for a specific game.
+&nbsp;     * Automatically links the stats object back to this {@link UserStats} instance.
+&nbsp;     *
+&nbsp;     * @param gameName the unique name of the game
+&nbsp;     * @param stats the statistics object to associate with the user
+&nbsp;     */
+&nbsp;    public void addGameStats(String gameName, GameStats stats) {
+<b class="fc">&nbsp;        stats.setUserStats(this);</b>
+<b class="fc">&nbsp;        gameStats.put(gameName, stats);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Retrieves the statistics for a specific game.
+&nbsp;     *
+&nbsp;     * @param gameName the name of the game
+&nbsp;     * @return the {@link GameStats} associated with that game, or {@code null} if not found
+&nbsp;     */
+&nbsp;    public GameStats getGameStats(String gameName) {
+<b class="fc">&nbsp;        return gameStats.get(gameName);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Retrieves a map of all game statistics for the user.
+&nbsp;     *
+&nbsp;     * @return an unfiltered map containing all game-name/stat pairs
+&nbsp;     */
+&nbsp;    public Map&lt;String, GameStats&gt; getAllGameStats() {
+<b class="fc">&nbsp;        return gameStats;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @return the {@link AppUser} linked to these statistics
+&nbsp;     */
+<b class="fc">&nbsp;    public AppUser getAppUser() { return this.appUser; }</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Assigns the associated {@link AppUser}.
+&nbsp;     *
+&nbsp;     * @param user the user whose statistics these are
+&nbsp;     */
+<b class="fc">&nbsp;    public void setAppUser(AppUser user) { appUser = user; }</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @return the internal ID for this UserStats entity
+&nbsp;     */
+&nbsp;    public long getId() {
+<b class="fc">&nbsp;        return id;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Sets the internal ID for this statistics record.
+&nbsp;     *
+&nbsp;     * @param id unique identifier
+&nbsp;     */
+&nbsp;    public void setId(long id) {
+<b class="nc">&nbsp;        this.id = id;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-12-10 15:33</div>
+</div>
+</body>
+</html>

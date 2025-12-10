@@ -1,0 +1,179 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > BlackJackDeck</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">data.Game.BlackJack</a>
+</div>
+
+<h1>Coverage Summary for Class: BlackJackDeck (data.Game.BlackJack)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">BlackJackDeck</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/17)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package data.Game.BlackJack;
+&nbsp;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.Collections;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;public class BlackJackDeck {
+&nbsp;    private List&lt;BlackJackCard&gt; cards;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Basic constructor for a normal 52 card deck
+&nbsp;     */
+<b class="nc">&nbsp;    public BlackJackDeck(int numberOfDecks) {</b>
+<b class="nc">&nbsp;        cards = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;        for (int j = 0; j &lt; numberOfDecks; j++) {</b>
+<b class="nc">&nbsp;            char[] suits = {&#39;h&#39;, &#39;d&#39;, &#39;s&#39;, &#39;c&#39;};</b>
+&nbsp;
+<b class="nc">&nbsp;            for (char s : suits) {</b>
+<b class="nc">&nbsp;                for (int i = 2; i &lt;= 14; i++) {</b>
+<b class="nc">&nbsp;                    cards.add(new BlackJackCard(i, s));</b>
+&nbsp;                }
+&nbsp;            }
+&nbsp;        }
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * Shuffles the deck of cards using the collections class
+&nbsp;     */
+&nbsp;    public void shuffle(){
+<b class="nc">&nbsp;        Collections.shuffle(cards);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Prints out all the cards currently in the deck
+&nbsp;     */
+&nbsp;    public void printDeck() {
+<b class="nc">&nbsp;        for(BlackJackCard card : cards){</b>
+<b class="nc">&nbsp;            System.out.println(card.toString());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Deals a card by removing it from the deck and returning a card object
+&nbsp;     */
+&nbsp;    public BlackJackCard dealCard(boolean isShown) {
+<b class="nc">&nbsp;        if(!cards.isEmpty()) {</b>
+<b class="nc">&nbsp;             BlackJackCard dealtCard = cards.remove(cards.size()-1);</b>
+<b class="nc">&nbsp;             dealtCard.setIsShowing(isShown);</b>
+<b class="nc">&nbsp;             return dealtCard;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        System.out.println(&quot;Deck is empty&quot;);</b>
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Returns how many cards are left in the deck
+&nbsp;     */
+&nbsp;    public int size() {
+<b class="nc">&nbsp;        return cards.size();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;}
+&nbsp;
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-12-10 15:33</div>
+</div>
+</body>
+</html>

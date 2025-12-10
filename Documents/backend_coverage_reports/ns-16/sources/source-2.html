@@ -1,0 +1,296 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > LaptopController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">onetomany.Laptops</a>
+</div>
+
+<h1>Coverage Summary for Class: LaptopController (onetomany.Laptops)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">LaptopController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/24)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/61)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package onetomany.Laptops;
+&nbsp;
+&nbsp;import java.io.File;
+&nbsp;import java.io.IOException;
+&nbsp;import java.nio.file.Files;
+&nbsp;import java.nio.file.Path;
+&nbsp;import java.nio.file.Paths;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;import javax.servlet.http.HttpServletRequest;
+&nbsp;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.core.io.ByteArrayResource;
+&nbsp;import org.springframework.core.io.Resource;
+&nbsp;import org.springframework.http.HttpHeaders;
+&nbsp;import org.springframework.http.MediaType;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.web.bind.annotation.DeleteMapping;
+&nbsp;import org.springframework.web.bind.annotation.GetMapping;
+&nbsp;import org.springframework.web.bind.annotation.PathVariable;
+&nbsp;import org.springframework.web.bind.annotation.PostMapping;
+&nbsp;import org.springframework.web.bind.annotation.PutMapping;
+&nbsp;import org.springframework.web.bind.annotation.RequestBody;
+&nbsp;import org.springframework.web.bind.annotation.RequestParam;
+&nbsp;import org.springframework.web.bind.annotation.RestController;
+&nbsp;import org.springframework.web.multipart.MultipartFile;
+&nbsp;
+&nbsp;/**
+&nbsp; * 
+&nbsp; * @author Vivek Bengre
+&nbsp; * 
+&nbsp; */ 
+&nbsp;
+&nbsp;@RestController
+<b class="nc">&nbsp;public class LaptopController {</b>
+&nbsp;
+&nbsp;    // This is path to which the file will be written
+&nbsp;    // You can optionally store it the database if the files
+&nbsp;    // are of the range of 1MB. Larger files slow down the 
+&nbsp;    // database query speeds over time
+<b class="nc">&nbsp;    private static String uploadPath = &quot;/uploadedFiles/&quot;;</b>
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    LaptopRepository laptopRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    HttpServletRequest httpServletRequest;
+&nbsp;    
+<b class="nc">&nbsp;    private String success = &quot;{\&quot;message\&quot;:\&quot;success\&quot;}&quot;;</b>
+<b class="nc">&nbsp;    private String failure = &quot;{\&quot;message\&quot;:\&quot;failure\&quot;}&quot;;</b>
+&nbsp;
+&nbsp;    @GetMapping(path = &quot;/laptops&quot;)
+&nbsp;    List&lt;Laptop&gt; getAllLaptops(){
+<b class="nc">&nbsp;        return laptopRepository.findAll();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(path = &quot;/laptops/{id}&quot;)
+&nbsp;    Laptop getLaptopById(@PathVariable int id){
+<b class="nc">&nbsp;        return laptopRepository.findById(id);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PostMapping(path = &quot;/laptops&quot;)
+&nbsp;    String createLaptop(@RequestBody Laptop Laptop){
+<b class="nc">&nbsp;        if (Laptop == null)</b>
+<b class="nc">&nbsp;            return failure;</b>
+<b class="nc">&nbsp;        laptopRepository.save(Laptop);</b>
+<b class="nc">&nbsp;        return success;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PutMapping(path = &quot;/laptops/{id}&quot;)
+&nbsp;    Laptop updateLaptop(@PathVariable int id, @RequestBody Laptop request){
+<b class="nc">&nbsp;        Laptop laptop = laptopRepository.findById(id);</b>
+<b class="nc">&nbsp;        if(laptop == null)</b>
+<b class="nc">&nbsp;            return null;</b>
+<b class="nc">&nbsp;        laptopRepository.save(request);</b>
+<b class="nc">&nbsp;        return laptopRepository.findById(id);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @DeleteMapping(path = &quot;/laptops/{id}&quot;)
+&nbsp;    String deleteLaptop(@PathVariable int id){
+&nbsp;
+<b class="nc">&nbsp;        Laptop laptop = laptopRepository.findById(id);</b>
+&nbsp;
+<b class="nc">&nbsp;        if(laptop == null)</b>
+<b class="nc">&nbsp;            return success;</b>
+&nbsp;        
+&nbsp;        // delete associated file of object is deleted
+<b class="nc">&nbsp;        File currentInvoice = new File(laptop.getInvoicePath());</b>
+<b class="nc">&nbsp;        if (currentInvoice != null &amp;&amp; currentInvoice.exists())</b>
+<b class="nc">&nbsp;            currentInvoice.delete();</b>
+&nbsp;        
+<b class="nc">&nbsp;        laptopRepository.deleteById(id);</b>
+<b class="nc">&nbsp;        return success;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;     /**
+&nbsp;     * This is where the invoice is assigned to each laptop, you can observe that there is no @RequestBody,
+&nbsp;     * this is because a file and data cannot be uploaded together with different formats with @RequestBody.
+&nbsp;     * @RequestParam allows for 2 different types of data i.e. file and text. Only the file is upoaded in this case
+&nbsp;     * and has the key &#39;invoice&#39;. Note that in this case the file is being saved to the disk and the path is stored in
+&nbsp;     * database. Using this path, one can access the files. While testing with postman use form-data as body and key as invoice
+&nbsp;     */
+&nbsp;    @PutMapping(path = &quot;/laptops/{id}/invoice&quot;)
+&nbsp;    public String uploadLaptopInvoice(@PathVariable int id, @RequestParam(&quot;invoice&quot;) MultipartFile invoiceFile) throws IOException{
+<b class="nc">&nbsp;        if(invoiceFile.isEmpty()) </b>
+<b class="nc">&nbsp;            return failure;</b>
+&nbsp;        
+&nbsp;        // get the complete path from the root to save file
+<b class="nc">&nbsp;        String fullPath = httpServletRequest.getServletContext().getRealPath(uploadPath);</b>
+&nbsp;
+&nbsp;        // creates a new directory if it doesnt exist
+<b class="nc">&nbsp;        if (!new File(fullPath).exists())</b>
+<b class="nc">&nbsp;            new File(fullPath).mkdir();</b>
+&nbsp;        
+&nbsp;        // save the file in such a way that it can be uniquely identified even if the uploaded file is the same
+<b class="nc">&nbsp;        fullPath+=(&quot;laptop_invoice_&quot;+id+&quot;_&quot;+invoiceFile.getOriginalFilename());</b>
+<b class="nc">&nbsp;        System.out.println(fullPath);</b>
+&nbsp;        // get the Laptop associated with the id
+<b class="nc">&nbsp;        Laptop laptop = laptopRepository.findById(id);</b>
+<b class="nc">&nbsp;        String currentPath = laptop.getInvoicePath();</b>
+&nbsp;
+&nbsp;        // delete if there is an invoice present already
+<b class="nc">&nbsp;        if (currentPath != null){        </b>
+<b class="nc">&nbsp;            File currentInvoice = new File(currentPath);</b>
+<b class="nc">&nbsp;            if(currentInvoice.exists())</b>
+<b class="nc">&nbsp;                currentInvoice.delete();</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // associate the newly uploaded invoice with the laptop
+&nbsp;        // and save the new path in the database
+<b class="nc">&nbsp;        laptop.setInvoicePath(fullPath);</b>
+<b class="nc">&nbsp;        laptopRepository.save(laptop);</b>
+&nbsp;
+&nbsp;        // save the file to disk
+<b class="nc">&nbsp;        File tempFile = new File(fullPath);</b>
+<b class="nc">&nbsp;        invoiceFile.transferTo(tempFile);</b>
+&nbsp;        
+<b class="nc">&nbsp;        return success;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;     /**
+&nbsp;     * The Response Entity type is set as &lt;Resource&gt;, which can handle files and images very well
+&nbsp;     * additional header have to be set to tell the front end what type of conent is being sent from the 
+&nbsp;     * backend, thus in this example headers are set.
+&nbsp;    */
+&nbsp;    @GetMapping(path = &quot;/laptops/{id}/invoice&quot;)
+&nbsp;    ResponseEntity&lt;Resource&gt; getLaptopInvoice(@PathVariable int id) throws IOException{
+&nbsp;        
+<b class="nc">&nbsp;        Laptop laptop = laptopRepository.findById(id);</b>
+&nbsp;
+&nbsp;        // if laptop id not found it cannot have an invoice associated with it
+<b class="nc">&nbsp;        if(laptop == null || laptop.getInvoicePath() == null)</b>
+<b class="nc">&nbsp;            return null;</b>
+&nbsp;        
+&nbsp;        // Check the file if it exists and load it into the memory
+<b class="nc">&nbsp;        File file = new File(laptop.getInvoicePath());</b>
+<b class="nc">&nbsp;        if(!file.exists())</b>
+<b class="nc">&nbsp;            return null;</b>
+&nbsp;
+<b class="nc">&nbsp;        String[] splitPath = laptop.getInvoicePath().split(&quot;/&quot;);</b>
+<b class="nc">&nbsp;        String fileName = splitPath[splitPath.length-1];</b>
+&nbsp;        // add headers to state that a file is being downloaded
+<b class="nc">&nbsp;        HttpHeaders header = new HttpHeaders();</b>
+<b class="nc">&nbsp;        header.add(HttpHeaders.CONTENT_DISPOSITION, &quot;attachment; filename=&quot;+fileName);</b>
+<b class="nc">&nbsp;        header.add(&quot;Cache-Control&quot;, &quot;no-cache, no-store, must-revalidate&quot;);</b>
+<b class="nc">&nbsp;        header.add(&quot;Pragma&quot;, &quot;no-cache&quot;);</b>
+<b class="nc">&nbsp;        header.add(&quot;Expires&quot;, &quot;0&quot;);</b>
+&nbsp;
+&nbsp;        // convert the file into bytearrayresource format to send to the front end with the file
+<b class="nc">&nbsp;        Path path = Paths.get(file.getAbsolutePath());</b>
+<b class="nc">&nbsp;        ByteArrayResource data = new ByteArrayResource(Files.readAllBytes(path));</b>
+&nbsp;
+&nbsp;        // send the response entity back to the front end with the 
+<b class="nc">&nbsp;        return ResponseEntity.ok()</b>
+<b class="nc">&nbsp;                .headers(header)</b>
+<b class="nc">&nbsp;                .contentLength(file.length())</b>
+<b class="nc">&nbsp;                .contentType(MediaType.parseMediaType(&quot;application/octet-stream&quot;))</b>
+<b class="nc">&nbsp;                .body(data);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-12-10 15:33</div>
+</div>
+</body>
+</html>

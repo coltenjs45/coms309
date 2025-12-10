@@ -1,0 +1,317 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > LobbyWebSocket</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">data.Lobby</a>
+</div>
+
+<h1>Coverage Summary for Class: LobbyWebSocket (data.Lobby)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">LobbyWebSocket</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    37.5%
+  </span>
+  <span class="absValue">
+    (3/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/20)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    12.8%
+  </span>
+  <span class="absValue">
+    (5/39)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package data.Lobby;
+&nbsp;
+&nbsp;import com.fasterxml.jackson.databind.ObjectMapper;
+&nbsp;import data.User.*;
+&nbsp;import jakarta.websocket.*;
+&nbsp;import jakarta.websocket.server.PathParam;
+&nbsp;import jakarta.websocket.server.ServerEndpoint;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.stereotype.Component;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;import java.util.*;
+&nbsp;import java.util.concurrent.ConcurrentHashMap;
+&nbsp;
+&nbsp;/**
+&nbsp; * WebSocket endpoint for real-time communication within a lobby.
+&nbsp; * &lt;p&gt;
+&nbsp; * This endpoint allows users to join a lobby, send messages, start games,
+&nbsp; * and receive broadcast updates about other users joining or leaving.
+&nbsp; * &lt;p&gt;
+&nbsp; * WebSocket path: {@code /ws/lobby/{joinCode}/{username}}
+&nbsp; */
+&nbsp;@Component
+&nbsp;@ServerEndpoint(value = &quot;/ws/lobby/{joinCode}/{username}&quot;)
+<b class="fc">&nbsp;public class LobbyWebSocket {</b>
+&nbsp;
+&nbsp;    private static LobbyRepository lobbyRepository;
+&nbsp;    private static AppUserRepository userRepository;
+&nbsp;
+<b class="fc">&nbsp;    private static final Map&lt;String, Set&lt;Session&gt;&gt; lobbySessions = new ConcurrentHashMap&lt;&gt;();</b>
+<b class="fc">&nbsp;    private static final ObjectMapper mapper = new ObjectMapper();</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Spring injection for static repositories.
+&nbsp;     * &lt;p&gt;
+&nbsp;     * Required because WebSocket endpoints are managed by the container,
+&nbsp;     * not Spring, so static fields are used to access Spring beans.
+&nbsp;     *
+&nbsp;     * @param lobbyRepo the {@link LobbyRepository} bean
+&nbsp;     * @param userRepo  the {@link AppUserRepository} bean
+&nbsp;     */
+&nbsp;    @Autowired
+&nbsp;    public void setStaticRepositories(LobbyRepository lobbyRepo, AppUserRepository userRepo) {
+<b class="fc">&nbsp;        LobbyWebSocket.lobbyRepository = lobbyRepo;</b>
+<b class="fc">&nbsp;        LobbyWebSocket.userRepository = userRepo;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Called when a new WebSocket connection is opened.
+&nbsp;     *
+&nbsp;     * @param session  the WebSocket session
+&nbsp;     * @param joinCode the lobby join code
+&nbsp;     * @param username the username of the connecting user
+&nbsp;     * @throws IOException if sending messages to sessions fails
+&nbsp;     */
+&nbsp;    @OnOpen
+&nbsp;    public void onOpen(Session session,
+&nbsp;                       @PathParam(&quot;joinCode&quot;) String joinCode,
+&nbsp;                       @PathParam(&quot;username&quot;) String username) throws IOException {
+&nbsp;
+&nbsp;        // Validate lobby existence
+<b class="nc">&nbsp;        Lobby lobby = lobbyRepository.findByJoinCode(joinCode);</b>
+<b class="nc">&nbsp;        if (lobby == null) {</b>
+<b class="nc">&nbsp;            session.close(new CloseReason(CloseReason.CloseCodes.CANNOT_ACCEPT, &quot;Lobby not found.&quot;));</b>
+&nbsp;            return;
+&nbsp;        }
+&nbsp;
+&nbsp;        // Validate user existence
+<b class="nc">&nbsp;        AppUser user = userRepository.findByUsername(username);</b>
+<b class="nc">&nbsp;        if (user == null) {</b>
+<b class="nc">&nbsp;            session.close(new CloseReason(CloseReason.CloseCodes.CANNOT_ACCEPT, &quot;User not found.&quot;));</b>
+&nbsp;            return;
+&nbsp;        }
+&nbsp;
+&nbsp;        // Register the session
+<b class="nc">&nbsp;        Set&lt;Session&gt; sessionsForLobby = lobbySessions.get(joinCode);</b>
+<b class="nc">&nbsp;        if (sessionsForLobby == null) {</b>
+<b class="nc">&nbsp;            sessionsForLobby = ConcurrentHashMap.newKeySet();</b>
+<b class="nc">&nbsp;            lobbySessions.put(joinCode, sessionsForLobby);</b>
+&nbsp;        }
+&nbsp;        // Add the current session to the lobby&#39;s session set
+<b class="nc">&nbsp;        sessionsForLobby.add(session);</b>
+&nbsp;
+&nbsp;
+&nbsp;        // Broadcast join message to the lobby
+<b class="nc">&nbsp;        broadcastJson(joinCode, Map.of(</b>
+&nbsp;                &quot;type&quot;, &quot;JOIN&quot;,
+&nbsp;                &quot;username&quot;, username,
+&nbsp;                &quot;message&quot;, username + &quot; joined the lobby.&quot;
+&nbsp;        ));
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * Handles messages sent by clients.
+&nbsp;     * &lt;p&gt;
+&nbsp;     * Supports &quot;START&quot; messages to start the game and &quot;MESSAGE&quot; messages
+&nbsp;     * for chat functionality.
+&nbsp;     *
+&nbsp;     * @param session  the WebSocket session
+&nbsp;     * @param joinCode the lobby join code
+&nbsp;     * @param username the username sending the message
+&nbsp;     * @param message  the JSON-formatted message
+&nbsp;     * @throws IOException if broadcasting fails
+&nbsp;     */
+&nbsp;    @OnMessage
+&nbsp;    public void onMessage(Session session,
+&nbsp;                          @PathParam(&quot;joinCode&quot;) String joinCode,
+&nbsp;                          @PathParam(&quot;username&quot;) String username,
+&nbsp;                          String message) throws IOException {
+&nbsp;
+<b class="nc">&nbsp;        Map&lt;String, Object&gt; msg = mapper.readValue(message, Map.class);</b>
+<b class="nc">&nbsp;        String type = (String) msg.get(&quot;type&quot;);</b>
+&nbsp;
+<b class="nc">&nbsp;        if (type == null) {</b>
+&nbsp;            return;
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        switch (type.toUpperCase()) {</b>
+&nbsp;            case &quot;START&quot;:
+&nbsp;                // Broadcast start event
+<b class="nc">&nbsp;                broadcastJson(joinCode, Map.of(</b>
+&nbsp;                        &quot;type&quot;, &quot;START&quot;,
+&nbsp;                        &quot;username&quot;, username,
+&nbsp;                        &quot;message&quot;, username + &quot; has started the game.&quot;
+&nbsp;                ));
+<b class="nc">&nbsp;                System.out.println(&quot;Game started by &quot; + username + &quot; in lobby &quot; + joinCode);</b>
+&nbsp;                break;
+&nbsp;
+&nbsp;            case &quot;MESSAGE&quot;:
+&nbsp;                // Regular chat message
+<b class="nc">&nbsp;                broadcastJson(joinCode, Map.of(</b>
+&nbsp;                        &quot;type&quot;, &quot;MESSAGE&quot;,
+&nbsp;                        &quot;username&quot;, username,
+<b class="nc">&nbsp;                        &quot;message&quot;, msg.get(&quot;message&quot;)</b>
+&nbsp;                ));
+&nbsp;                break;
+&nbsp;
+&nbsp;            default:
+<b class="nc">&nbsp;                System.out.println(&quot;Unknown message type: &quot; + type);</b>
+&nbsp;                break;
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Called when a WebSocket connection is closed.
+&nbsp;     * Removes the session from the lobby and broadcasts a &quot;LEAVE&quot; message.
+&nbsp;     *
+&nbsp;     * @param session  the WebSocket session
+&nbsp;     * @param joinCode the lobby join code
+&nbsp;     * @param username the username leaving
+&nbsp;     * @throws IOException if broadcasting fails
+&nbsp;     */
+&nbsp;    @OnClose
+&nbsp;    public void onClose(Session session,
+&nbsp;                        @PathParam(&quot;joinCode&quot;) String joinCode,
+&nbsp;                        @PathParam(&quot;username&quot;) String username) throws IOException {
+<b class="nc">&nbsp;        Set&lt;Session&gt; sessions = lobbySessions.get(joinCode);</b>
+<b class="nc">&nbsp;        if (sessions != null) {</b>
+<b class="nc">&nbsp;            sessions.remove(session);</b>
+<b class="nc">&nbsp;            if (sessions.isEmpty()) {</b>
+<b class="nc">&nbsp;                lobbySessions.remove(joinCode);</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        broadcastJson(joinCode, Map.of(</b>
+&nbsp;                &quot;type&quot;, &quot;LEAVE&quot;,
+&nbsp;                &quot;username&quot;, username,
+&nbsp;                &quot;message&quot;, username + &quot; left the lobby.&quot;
+&nbsp;        ));
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Called when an error occurs on the WebSocket connection.
+&nbsp;     *
+&nbsp;     * @param session   the WebSocket session
+&nbsp;     * @param throwable the thrown error
+&nbsp;     */
+&nbsp;    @OnError
+&nbsp;    public void onError(Session session, Throwable throwable) {
+<b class="nc">&nbsp;        System.err.println(&quot;WebSocket error: &quot; + throwable.getMessage());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Broadcasts a JSON message to all users in a lobby.
+&nbsp;     *
+&nbsp;     * @param joinCode the lobby join code
+&nbsp;     * @param message  the message as a map
+&nbsp;     * @throws IOException if sending messages fails
+&nbsp;     */
+&nbsp;    private void broadcastJson(String joinCode, Map&lt;String, Object&gt; message) throws IOException {
+<b class="nc">&nbsp;        Set&lt;Session&gt; sessions = lobbySessions.get(joinCode);</b>
+<b class="nc">&nbsp;        if (sessions == null) return;</b>
+&nbsp;
+<b class="nc">&nbsp;        String jsonMessage = mapper.writeValueAsString(message);</b>
+&nbsp;
+<b class="nc">&nbsp;        for (Session session : sessions) {</b>
+<b class="nc">&nbsp;            if (session.isOpen()) {</b>
+<b class="nc">&nbsp;                session.getBasicRemote().sendText(jsonMessage);</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-12-10 15:33</div>
+</div>
+</body>
+</html>

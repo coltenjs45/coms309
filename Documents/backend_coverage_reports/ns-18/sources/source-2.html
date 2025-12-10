@@ -1,0 +1,272 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > UserController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">onetomany.Users</a>
+</div>
+
+<h1>Coverage Summary for Class: UserController (onetomany.Users)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">UserController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/14)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/49)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package onetomany.Users;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;import java.sql.Blob;
+&nbsp;import java.sql.SQLException;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;import javax.sql.rowset.serial.SerialBlob;
+&nbsp;
+&nbsp;import com.fasterxml.jackson.databind.ObjectMapper;
+&nbsp;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.core.io.ByteArrayResource;
+&nbsp;import org.springframework.core.io.Resource;
+&nbsp;import org.springframework.http.HttpHeaders;
+&nbsp;import org.springframework.http.MediaType;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.web.bind.annotation.DeleteMapping;
+&nbsp;import org.springframework.web.bind.annotation.GetMapping;
+&nbsp;import org.springframework.web.bind.annotation.PathVariable;
+&nbsp;import org.springframework.web.bind.annotation.PostMapping;
+&nbsp;import org.springframework.web.bind.annotation.PutMapping;
+&nbsp;import org.springframework.web.bind.annotation.RequestBody;
+&nbsp;import org.springframework.web.bind.annotation.RequestParam;
+&nbsp;import org.springframework.web.bind.annotation.RestController;
+&nbsp;import org.springframework.web.multipart.MultipartFile;
+&nbsp;
+&nbsp;import onetomany.Laptops.Laptop;
+&nbsp;import onetomany.Laptops.LaptopRepository;
+&nbsp;
+&nbsp;/**
+&nbsp; * 
+&nbsp; * @author Vivek Bengre
+&nbsp; * 
+&nbsp; */ 
+&nbsp;
+&nbsp;@RestController
+<b class="nc">&nbsp;public class UserController {</b>
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    UserRepository userRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    LaptopRepository laptopRepository;
+&nbsp;
+<b class="nc">&nbsp;    private String success = &quot;{\&quot;message\&quot;:\&quot;success\&quot;}&quot;;</b>
+<b class="nc">&nbsp;    private String failure = &quot;{\&quot;message\&quot;:\&quot;failure\&quot;}&quot;;</b>
+&nbsp;
+&nbsp;    @GetMapping(path = &quot;/users&quot;)
+&nbsp;    List&lt;User&gt; getAllUsers(){
+<b class="nc">&nbsp;        return userRepository.findAll();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(path = &quot;/users/{id}&quot;)
+&nbsp;    User getUserById( @PathVariable int id){
+<b class="nc">&nbsp;        return userRepository.findById(id);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This is where the userdata and the image should be uploaded, you can observe that there is no @RequestBody,
+&nbsp;     * this is because a file and data cannot be uploaded together with different formats with @RequestBody.
+&nbsp;     * @RequestParam allows for 2 different types of data i.e. file and text. The text is entered as a JSON and then 
+&nbsp;     * converted into an Object by the Object mapper and then saved into the database. Note: use form data as body for postman testing
+&nbsp;     * first key will be avatar with assciated file, and the second key will be user with input as a json
+&nbsp;     */
+&nbsp;    @PostMapping(path = &quot;/users&quot;)
+&nbsp;    String createUser(@RequestParam(&quot;avatar&quot;) MultipartFile avatar, @RequestParam(&quot;user&quot;) String userString) throws Exception {
+&nbsp;        // check if user input is null
+<b class="nc">&nbsp;        if (userString == null)</b>
+<b class="nc">&nbsp;            return failure;</b>
+&nbsp;
+&nbsp;        // convert the string into an object which is requied, this is what happens by default when
+&nbsp;        // you use @RequestBody
+<b class="nc">&nbsp;        ObjectMapper objectMapper = new ObjectMapper();</b>
+<b class="nc">&nbsp;        User user = objectMapper.readValue(userString, User.class);</b>
+&nbsp;        
+&nbsp;        // This indicates the file name and the extenstion of the image i.e. png jpg etc and is required when
+&nbsp;        // the image has to be sent to the front end
+<b class="nc">&nbsp;        user.setExtenstion(avatar.getOriginalFilename());</b>
+&nbsp;
+&nbsp;        // user is first saved as the image can be null
+<b class="nc">&nbsp;        userRepository.save(user);</b>
+&nbsp;
+&nbsp;        // check if the image is not null update the image for the entity
+<b class="nc">&nbsp;        if(avatar != null) {</b>
+<b class="nc">&nbsp;            byte[] file = avatar.getBytes();</b>
+<b class="nc">&nbsp;            SerialBlob blob = new SerialBlob(file);</b>
+<b class="nc">&nbsp;            Blob image = blob;</b>
+<b class="nc">&nbsp;            user.setAvtar(image);</b>
+<b class="nc">&nbsp;            userRepository.save(user);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return success;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PutMapping(&quot;/users/{id}&quot;)
+&nbsp;    User updateUser(@PathVariable int id, @RequestBody User request){
+<b class="nc">&nbsp;        User user = userRepository.findById(id);</b>
+<b class="nc">&nbsp;        if(user == null)</b>
+<b class="nc">&nbsp;            return null;</b>
+<b class="nc">&nbsp;        userRepository.save(request);</b>
+<b class="nc">&nbsp;        return userRepository.findById(id);</b>
+&nbsp;    }   
+&nbsp;    
+&nbsp;    @PutMapping(&quot;/users/{userId}/laptops/{laptopId}&quot;)
+&nbsp;    String assignLaptopToUser(@PathVariable int userId,@PathVariable int laptopId){
+<b class="nc">&nbsp;        User user = userRepository.findById(userId);</b>
+<b class="nc">&nbsp;        Laptop laptop = laptopRepository.findById(laptopId);</b>
+<b class="nc">&nbsp;        if(user == null || laptop == null)</b>
+<b class="nc">&nbsp;            return failure;</b>
+<b class="nc">&nbsp;        laptop.setUser(user);</b>
+<b class="nc">&nbsp;        user.setLaptop(laptop);</b>
+<b class="nc">&nbsp;        userRepository.save(user);</b>
+<b class="nc">&nbsp;        return success;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @DeleteMapping(path = &quot;/users/{id}&quot;)
+&nbsp;    String deleteLaptop(@PathVariable int id){
+<b class="nc">&nbsp;        userRepository.deleteById(id);</b>
+<b class="nc">&nbsp;        return success;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * The Response Entity type is set as &lt;Resource&gt;, which can handle files and images very well
+&nbsp;     * additional header have to be set to tell the front end what type of conent is being sent from the 
+&nbsp;     * backend, thus in this example headers are set.
+&nbsp;    */
+&nbsp;    @GetMapping(path = &quot;/users/{id}/avatar&quot;)
+&nbsp;    ResponseEntity&lt;Resource&gt; getLaptopInvoice(@PathVariable int id) throws IOException, SQLException{
+&nbsp;        
+<b class="nc">&nbsp;        User user = userRepository.findById(id);</b>
+&nbsp;
+&nbsp;        // if user id not found it cannot have an avatar associated with it
+<b class="nc">&nbsp;        if(user == null || user.getAvtar() == null){</b>
+<b class="nc">&nbsp;            return null;</b>
+&nbsp;        }
+&nbsp;        
+&nbsp;        // add headers to state that a file is being downloaded
+<b class="nc">&nbsp;        HttpHeaders header = new HttpHeaders();</b>
+<b class="nc">&nbsp;        header.add(HttpHeaders.CONTENT_DISPOSITION, &quot;attachment; filename=&quot;+user.getExtenstion());</b>
+<b class="nc">&nbsp;        header.add(&quot;Cache-Control&quot;, &quot;no-cache, no-store, must-revalidate&quot;);</b>
+<b class="nc">&nbsp;        header.add(&quot;Pragma&quot;, &quot;no-cache&quot;);</b>
+<b class="nc">&nbsp;        header.add(&quot;Expires&quot;, &quot;0&quot;);</b>
+&nbsp;
+&nbsp;        // convert blob to bytearray and set it as response
+<b class="nc">&nbsp;        int blobLength = (int)user.getAvtar().length();</b>
+<b class="nc">&nbsp;        byte[] byteArray = user.getAvtar().getBytes(1, blobLength);</b>
+<b class="nc">&nbsp;        ByteArrayResource data = new ByteArrayResource(byteArray);</b>
+&nbsp;
+&nbsp;        // send the response entity back to the front end with the file
+<b class="nc">&nbsp;        return ResponseEntity.ok()</b>
+<b class="nc">&nbsp;                .headers(header)</b>
+<b class="nc">&nbsp;                .contentLength(blobLength)</b>
+<b class="nc">&nbsp;                .contentType(MediaType.parseMediaType(&quot;application/octet-stream&quot;))</b>
+<b class="nc">&nbsp;                .body(data);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-12-10 15:33</div>
+</div>
+</body>
+</html>
