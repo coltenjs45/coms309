@@ -1,0 +1,40 @@
+yes or no is tested:
+user stats endpoints:
+  y      List<UserStats> getAllUserStats()
+
+  y     UserStats getUserStats(long id)
+
+  y      String deleteUserStats(long id)
+
+  y      String deleteUserStatsByUserStatID(long id)
+
+  y      UserStats addUserStat(long id)
+
+  y      UserStats incrementStat(long id, String gameName, String stat)
+            versions tested:
+            testIncrementGoFishStat_GoneFishing() - GoFish/goneFishing
+            testIncrementGoFishStat_QuestionAsked() - GoFish/questionAsked
+            testIncrementEuchreStat_TrickTaken() - Euchre/trickTaken
+            testIncrementBlackjackStat_BetWon() - Blackjack/betWon
+            testIncrementStat_InvalidGame() - Invalid game name
+            testIncrementStat_InvalidStat() - Invalid stat name
+            testIncrementMultipleStats() - Multiple increments
+            testIncrementGamePlayed() - gamePlayed stat
+            testAllGoFishStats() - All GoFish stats (goneFishing, questionAsked, bookCollected, gameWon)
+            testAllEuchreStats() - All Euchre stats (trickTaken, pickedUp, goneAlone, sweepWon, gameWon)
+            testAllBlackjackStats() - All Blackjack stats (betWon, doubledDown, split, hit, gameWon)
+  y     UserStats setStat(long id, String gameName, String stat, int amount)
+Lobby endpoints:
+
+  y      POST /Lobby/joinCode/autogen/{username} - createLobbyWithautogen()
+  y      GET /Lobby/joinCode/{joinCode} - getLobbyByJoinCode()
+  y      PUT /Lobby/joinCode/{joinCode}/{username} - updateLobbyUsersByCode()
+  y      GET /Lobby/GameType/{gameType} - getAllLobbiesByGameType()
+  y      PUT /Lobby/joinCode/{joinCode} - updateLobbyByCode()
+  y      DELETE /Lobby/joinCode/{joinCode} - deleteLobbyByCode()
+  y      DELETE /Lobby/empty - deleteEmptyLobbies()
+  n      POST /Lobby - createLobby()
+  n      GET /Lobby - getAllLobbies()
+  n      PUT /Lobby/{lobbyID} - updateLobby()
+  n      PUT /Lobby/{lobbyID}/{username} - updateLobbyUsers()
+  n      DELETE /Lobby/{lobbyID} - deleteLobby()
